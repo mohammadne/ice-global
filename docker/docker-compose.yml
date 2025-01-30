@@ -1,13 +1,13 @@
 version: "3.7"
 services:
   redis:
-    image: redis:latest
+    image: redis:7.4.0-alpine3.20
     volumes:
       - orm_data_redis:/data
     ports:
       - "4000:6379"
   mysql:
-    image: mysql:8.0
+    image: mysql:9.2.0
     ports:
       - "4001:3306"
     environment:
@@ -17,7 +17,6 @@ services:
       - MYSQL_PASSWORD=9xz3jrd8wf
     volumes:
       - orm_data_mysql:/var/lib/mysql
-
 
 volumes:
   orm_data_mysql:
