@@ -1,5 +1,6 @@
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    session TEXT UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
+    id INTEGER NOT NULL,
+    session VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (id)
 );

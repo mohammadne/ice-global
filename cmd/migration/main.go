@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/mohammadne/ice-global/internal/config"
@@ -12,7 +13,7 @@ import (
 )
 
 func main() {
-	migration := flag.String("migration", "hacks/migrations", "The default migration directory")
+	migration := flag.String("migration", "hacks/schemas", "The migration directory (default: hacks/schemas)")
 	direction := flag.String("direction", "", "Either 'UP' or 'DOWN'")
 	flag.Parse() // Parse the command-line flags
 
@@ -31,9 +32,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = db.Migrate(mysql.MigrateDirection(*direction))
+	migrateDirection := mysql.MigrateDirection(strings.ToUpper(*direction))
+	err = db.Migrate(migrateDirection)
 	if err != nil {
-		slog.Error(`error connecting to mysql database`, `Err`, err)
+		slog.Error(`error migrating mysql database`, `Err`, err)
 		os.Exit(1)
 	}
 
