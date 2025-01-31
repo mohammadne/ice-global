@@ -2,7 +2,9 @@ package http
 
 import (
 	"context"
+	"embed"
 	"fmt"
+	"html/template"
 	"log/slog"
 	"net/http"
 	"os"
@@ -16,18 +18,28 @@ type Server struct {
 	router *gin.Engine
 }
 
+//go:embed templates/*
+var templates embed.FS
+
 func New() *Server {
-	s := &Server{
-		router: gin.Default(),
+	s := &Server{router: gin.Default()}
+
+	// Parse the embedded templates
+	tmplates, err := template.ParseFS(templates, "templates/*")
+	if err != nil {
+		slog.Error("error parsing templates", "Err", err)
+		os.Exit(1)
 	}
+	// Set the embedded template to Gin's renderer
+	s.router.SetHTMLTemplate(tmplates)
 
 	healthzRouter := s.router.Group("/healthz/")
 	healthzRouter.GET("/liveness", s.liveness)
 	healthzRouter.GET("/readiness", s.readiness)
 
-	s.router.GET("/", s.ShowAddItemForm)
-	s.router.POST("/add-item", s.AddItem)
-	s.router.GET("/remove-cart-item", s.DeleteCartItem)
+	s.router.GET("/", s.GenerateCookie, s.showAddItemForm)
+	s.router.POST("/add-item", s.RequiredCookie, s.addItem)
+	s.router.GET("/remove-cart-item", s.RequiredCookie, s.deleteCartItem)
 
 	return s
 }
