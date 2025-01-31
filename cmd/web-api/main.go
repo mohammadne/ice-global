@@ -37,17 +37,22 @@ func main() {
 	}
 
 	// storages
+	cartItemsStorage := storage.NewCartItems(mysql)
+	cartsStorage := storage.NewCarts(mysql)
 	itemsStorage := storage.NewItems(mysql)
+	usersStorage := storage.NewUsers(mysql)
 
 	// services
+	cartsService := services.NewCarts(cartItemsStorage, cartsStorage)
 	itemsService := services.NewItems(itemsStorage)
+	usersService := services.NewUsers(usersStorage)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go http.New(itemsService).Serve(ctx, &wg, *httpPort)
+	go http.New(cartsService, itemsService, usersService).Serve(ctx, &wg, *httpPort)
 
 	<-ctx.Done()
 	wg.Wait()

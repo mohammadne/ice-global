@@ -1,7 +1,7 @@
 package http
 
 import (
-	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,48 +15,36 @@ func (*Server) readiness(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-// ------------------------------------------------------
-
 func (s *Server) showAddItemForm(c *gin.Context) {
 	data := map[string]any{
 		"Error": c.Query("error"),
 	}
 
-	cookieRaw, exists := c.Get(CookieName)
+	userIdRaw, exists := c.Get(UserKey)
 	if exists {
-		cookie := cookieRaw.(*http.Cookie)
-		data["CartItems"] = getCartItemData(cookie.Value)
+		userId := userIdRaw.(int)
+		cartItems, err := s.cartsService.AllCartItemsByUserId(c.Request.Context(), userId)
+		if err != nil {
+			slog.Error("error while retrieving cart-items for the user", "Err", err)
+		} else {
+			result := make([]map[string]any, len(cartItems))
+			for _, cartItem := range cartItems {
+				if cartItem.Quantity <= 0 {
+					continue
+				}
+				resultItem := map[string]any{
+					"ID":       cartItem.Id,
+					"Quantity": cartItem.Quantity,
+					"Price":    cartItem.Item.Price * cartItem.Quantity,
+					"Product":  cartItem.Item.Name,
+				}
+				result = append(result, resultItem)
+			}
+			data["CartItems"] = result
+		}
 	}
 
 	c.HTML(http.StatusOK, "index.html", data)
-}
-
-func getCartItemData(sessionID string) (items []map[string]any) {
-	db := db.GetDatabase()
-	var cartEntity entity.CartEntity
-	result := db.Where(fmt.Sprintf("status = '%s' AND session_id = '%s'", entity.CartOpen, sessionID)).First(&cartEntity)
-
-	if result.Error != nil {
-		return
-	}
-
-	var cartItems []entity.CartItem
-	result = db.Where(fmt.Sprintf("cart_id = %d", cartEntity.ID)).Find(&cartItems)
-	if result.Error != nil {
-		return
-	}
-
-	for _, cartItem := range cartItems {
-		item := map[string]interface{}{
-			"ID":       cartItem.ID,
-			"Quantity": cartItem.Quantity,
-			"Price":    cartItem.Price,
-			"Product":  cartItem.ProductName,
-		}
-
-		items = append(items, item)
-	}
-	return items
 }
 
 // -----------------------------------------------------

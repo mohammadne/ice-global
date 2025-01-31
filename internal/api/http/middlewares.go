@@ -2,7 +2,9 @@ package http
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,22 +15,36 @@ const (
 	UserKey    = "user_id"
 )
 
-func (*Server) GenerateCookie(c *gin.Context) {
+func (s *Server) OptionalCookie(c *gin.Context) {
 	cookie, err := c.Request.Cookie(CookieName)
 	if errors.Is(err, http.ErrNoCookie) {
-		c.SetCookie(CookieName, time.Now().String(), 3600, "/", "localhost", false, true)
+		cookieValue := strconv.FormatInt(time.Now().UnixNano(), 10)
+		c.SetCookie(CookieName, cookieValue, 3600, "/", "localhost", false, true)
 	} else {
-		c.Set(CookieName, cookie)
+		// find the user and if exists, put the user-id
+		user, err := s.usersService.RetrieveUserOptional(c.Request.Context(), cookie.Value)
+		if err != nil {
+			slog.Error("error retrieving user", "Err", err)
+		} else if user != nil {
+			c.Set(UserKey, user.Id)
+		}
 	}
 	c.Next()
 }
 
-func (*Server) RequiredCookie(c *gin.Context) {
+func (s *Server) RequiredCookie(c *gin.Context) {
 	cookie, err := c.Request.Cookie(CookieName)
 	if err != nil || errors.Is(err, http.ErrNoCookie) || (cookie != nil && cookie.Value == "") {
 		c.Redirect(302, "/")
 		return
 	}
-	c.Set(CookieName, cookie)
+
+	user, err := s.usersService.RetrieveUserRequired(c.Request.Context(), cookie.Value)
+	if err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
+	c.Set(UserKey, user.Id)
 	c.Next()
 }

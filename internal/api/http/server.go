@@ -19,16 +19,20 @@ type Server struct {
 	router *gin.Engine
 
 	// services
+	cartsService services.Carts
 	itemsService services.Items
+	usersService services.Users
 }
 
 //go:embed templates/*
 var templates embed.FS
 
-func New(itemsService services.Items) *Server {
+func New(cartsService services.Carts, itemsService services.Items, usersService services.Users) *Server {
 	s := &Server{
 		router:       gin.Default(),
+		cartsService: cartsService,
 		itemsService: itemsService,
+		usersService: usersService,
 	}
 
 	// Parse the embedded templates
@@ -44,7 +48,7 @@ func New(itemsService services.Items) *Server {
 	healthzRouter.GET("/liveness", s.liveness)
 	healthzRouter.GET("/readiness", s.readiness)
 
-	s.router.GET("/", s.GenerateCookie, s.showAddItemForm)
+	s.router.GET("/", s.OptionalCookie, s.showAddItemForm)
 	// s.router.POST("/add-item", s.RequiredCookie, s.addItem)
 	// s.router.GET("/remove-cart-item", s.RequiredCookie, s.deleteCartItem)
 
