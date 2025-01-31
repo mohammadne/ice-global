@@ -50,6 +50,10 @@ const (
 )
 
 func (m *Mysql) Migrate(direction MigrateDirection) error {
+	if m.migrations == "" {
+		return fmt.Errorf("no migration directory has been given")
+	}
+
 	instance, err := mysql.WithInstance(m.DB.DB, &mysql.Config{})
 	if err != nil {
 		return fmt.Errorf("error creating migrate instance\n%v", err)
