@@ -2,12 +2,14 @@ package calculator
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"html/template"
-	db2 "interview/pkg/db"
-	"interview/pkg/entity"
 	"log"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+
+	"interview/internal/db"
+	"interview/internal/entity"
 )
 
 func GetCartData(c *gin.Context) {
@@ -32,7 +34,7 @@ func GetCartData(c *gin.Context) {
 	c.String(200, html)
 }
 func getCartItemData(sessionID string) (items []map[string]interface{}) {
-	db := db2.GetDatabase()
+	db := db.GetDatabase()
 	var cartEntity entity.CartEntity
 	result := db.Where(fmt.Sprintf("status = '%s' AND session_id = '%s'", entity.CartOpen, sessionID)).First(&cartEntity)
 

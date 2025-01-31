@@ -2,10 +2,12 @@ package calculator
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	db2 "interview/pkg/db"
-	"interview/pkg/entity"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+
+	"interview/internal/db"
+	"interview/internal/entity"
 )
 
 func DeleteCartItem(c *gin.Context) {
@@ -17,7 +19,7 @@ func DeleteCartItem(c *gin.Context) {
 
 	cookie, _ := c.Request.Cookie("ice_session_id")
 
-	db := db2.GetDatabase()
+	db := db.GetDatabase()
 
 	var cartEntity entity.CartEntity
 	result := db.Where(fmt.Sprintf("status = '%s' AND session_id = '%s'", entity.CartOpen, cookie.Value)).First(&cartEntity)

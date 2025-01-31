@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"interview/pkg/controllers"
-	"interview/pkg/db"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"interview/internal/controllers"
+	"interview/internal/db"
 )
 
 func main() {

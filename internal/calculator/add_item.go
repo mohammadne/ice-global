@@ -3,13 +3,15 @@ package calculator
 import (
 	"errors"
 	"fmt"
+	"log"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm"
-	db2 "interview/pkg/db"
-	"interview/pkg/entity"
-	"log"
-	"strconv"
+
+	"interview/internal/db"
+	"interview/internal/entity"
 )
 
 var itemPriceMapping = map[string]float64{
@@ -27,7 +29,7 @@ type CartItemForm struct {
 func AddItemToCart(c *gin.Context) {
 	cookie, _ := c.Request.Cookie("ice_session_id")
 
-	db := db2.GetDatabase()
+	db := db.GetDatabase()
 
 	var isCartNew bool
 	var cartEntity entity.CartEntity

@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"interview/pkg/calculator"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+
+	"interview/internal/calculator"
 )
 
 type TaxController struct {
