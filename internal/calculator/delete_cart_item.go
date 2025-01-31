@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"interview/internal/db"
-	"interview/internal/entity"
+	"github.com/mohammadne/ice-global/internal/db"
+	"github.com/mohammadne/ice-global/internal/entity"
 )
 
 func DeleteCartItem(c *gin.Context) {

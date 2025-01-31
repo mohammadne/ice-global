@@ -1,4 +1,4 @@
-module interview
+module github.com/mohammadne/ice-global
 
 go 1.23.5
 

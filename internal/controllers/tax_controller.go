@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"interview/internal/calculator"
+	"github.com/mohammadne/ice-global/internal/calculator"
 )
 
 type TaxController struct {

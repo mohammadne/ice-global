@@ -11,7 +11,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
-	"interview/pkg/metrics"
+	"github.com/mohammadne/ice-global/pkg/metrics"
 )
 
 type Mysql struct {

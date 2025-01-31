@@ -1,6 +1,6 @@
 package db
 
-import "interview/internal/entity"
+import "github.com/mohammadne/ice-global/internal/entity"
 
 func MigrateDatabase() {
 	db := GetDatabase()

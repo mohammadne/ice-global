@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm"
 
-	"interview/internal/db"
-	"interview/internal/entity"
+	"github.com/mohammadne/ice-global/internal/db"
+	"github.com/mohammadne/ice-global/internal/entity"
 )
 
 var itemPriceMapping = map[string]float64{

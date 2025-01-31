@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"interview/internal/controllers"
-	"interview/internal/db"
+	"github.com/mohammadne/ice-global/internal/controllers"
+	"github.com/mohammadne/ice-global/internal/db"
 )
 
 func main() {
