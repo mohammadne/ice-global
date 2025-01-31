@@ -4,10 +4,9 @@ import (
 	"flag"
 	"log/slog"
 	"os"
-	"runtime"
 	"strings"
-	"time"
 
+	"github.com/mohammadne/ice-global/cmd"
 	"github.com/mohammadne/ice-global/internal/config"
 	"github.com/mohammadne/ice-global/pkg/mysql"
 )
@@ -18,7 +17,7 @@ func main() {
 	flag.Parse() // Parse the command-line flags
 
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true, Level: slog.LevelInfo})))
-	slog.Info(`Go`, `Version`, runtime.Version(), `OS`, runtime.GOOS, `ARCH`, runtime.GOARCH, `now`, time.Now(), `Local`, time.Local)
+	cmd.BuildInfo()
 
 	cfg, err := config.LoadDefaults(true, "")
 	if err != nil {
