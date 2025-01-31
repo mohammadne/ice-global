@@ -8,7 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const CookieName = "ice_session_id"
+const (
+	CookieName = "ice_session_id"
+	UserKey    = "user_id"
+)
 
 func (*Server) GenerateCookie(c *gin.Context) {
 	cookie, err := c.Request.Cookie(CookieName)

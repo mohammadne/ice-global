@@ -12,17 +12,24 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mohammadne/ice-global/internal/services"
 )
 
 type Server struct {
 	router *gin.Engine
+
+	// services
+	itemsService services.Items
 }
 
 //go:embed templates/*
 var templates embed.FS
 
-func New() *Server {
-	s := &Server{router: gin.Default()}
+func New(itemsService services.Items) *Server {
+	s := &Server{
+		router:       gin.Default(),
+		itemsService: itemsService,
+	}
 
 	// Parse the embedded templates
 	tmplates, err := template.ParseFS(templates, "templates/*")
@@ -38,8 +45,8 @@ func New() *Server {
 	healthzRouter.GET("/readiness", s.readiness)
 
 	s.router.GET("/", s.GenerateCookie, s.showAddItemForm)
-	s.router.POST("/add-item", s.RequiredCookie, s.addItem)
-	s.router.GET("/remove-cart-item", s.RequiredCookie, s.deleteCartItem)
+	// s.router.POST("/add-item", s.RequiredCookie, s.addItem)
+	// s.router.GET("/remove-cart-item", s.RequiredCookie, s.deleteCartItem)
 
 	return s
 }

@@ -12,7 +12,10 @@ import (
 
 	"github.com/mohammadne/ice-global/cmd"
 	"github.com/mohammadne/ice-global/internal/api/http"
-	"github.com/mohammadne/ice-global/internal/db"
+	"github.com/mohammadne/ice-global/internal/config"
+	"github.com/mohammadne/ice-global/internal/services"
+	"github.com/mohammadne/ice-global/internal/storage"
+	"github.com/mohammadne/ice-global/pkg/mysql"
 )
 
 func main() {
@@ -22,25 +25,29 @@ func main() {
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true, Level: slog.LevelInfo})))
 	cmd.BuildInfo()
 
-	// cfg, err := config.LoadDefaults(true, "")
-	// if err != nil {
-	// 	panic(err)
-	// }
+	cfg, err := config.LoadDefaults(true, "")
+	if err != nil {
+		panic(err)
+	}
 
-	// mysql, err := mysql.Open(cfg.Mysql, "")
-	// if err != nil {
-	// 	slog.Error(`error connecting to mysql database`, `Err`, err)
-	// 	os.Exit(1)
-	// }
-	// _ = mysql
-	db.MigrateDatabase()
+	mysql, err := mysql.Open(cfg.Mysql, "")
+	if err != nil {
+		slog.Error(`error connecting to mysql database`, `Err`, err)
+		os.Exit(1)
+	}
+
+	// storages
+	itemsStorage := storage.NewItems(mysql)
+
+	// services
+	itemsService := services.NewItems(itemsStorage)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go http.New().Serve(ctx, &wg, *httpPort)
+	go http.New(itemsService).Serve(ctx, &wg, *httpPort)
 
 	<-ctx.Done()
 	wg.Wait()

@@ -7,4 +7,5 @@ type Item struct {
 	Name      string
 	Price     int
 	CreatedAt time.Time
+	UpdatedAt time.Time
 }

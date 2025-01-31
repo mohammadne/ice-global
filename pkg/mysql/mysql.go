@@ -23,7 +23,10 @@ const (
 )
 
 func Open(cfg *Config, migrations string) (*Mysql, error) {
-	connString := fmt.Sprintf("%s:%s@(%s:%d)/%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database)
+	connString := fmt.Sprintf(
+		"%s:%s@(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database,
+	)
 
 	database, err := sqlx.Open(driver, connString)
 	if err != nil {
