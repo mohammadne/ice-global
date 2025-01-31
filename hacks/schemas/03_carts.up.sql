@@ -1,0 +1,5 @@
+CREATE TABLE carts (
+    id SERIAL PRIMARY KEY,
+    user_id NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
