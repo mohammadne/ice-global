@@ -3,7 +3,9 @@ CREATE TABLE cart_items (
     cart_id INTEGER NOT NULL,
     item_id INTEGER NOT NULL,
     quantity INTEGER NOT NULL CHECK (quantity > 0), -- Prevents negative quantities
-    added_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    deleted_at TIMESTAMP DEFAULT NOW(),
     PRIMARY KEY (id),
     FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES items(id),
