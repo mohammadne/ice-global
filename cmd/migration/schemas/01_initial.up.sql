@@ -9,8 +9,6 @@ CREATE TABLE IF NOT EXISTS cart_entities
     status     LONGTEXT   
 );
 
-CREATE INDEX idx_cart_entities_deleted_at ON cart_entities (deleted_at);
-
 CREATE TABLE IF NOT EXISTS cart_items
 (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -22,5 +20,3 @@ CREATE TABLE IF NOT EXISTS cart_items
     quantity     BIGINT,
     price        DOUBLE
 );
-
-CREATE INDEX idx_cart_items_deleted_at ON cart_items (deleted_at);

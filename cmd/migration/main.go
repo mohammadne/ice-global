@@ -13,7 +13,7 @@ import (
 )
 
 //go:embed schemas/*.sql
-var migrations embed.FS
+var files embed.FS
 
 func main() {
 	direction := flag.String("direction", "", "Either 'UP' or 'DOWN'")
@@ -34,15 +34,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Read the directory containing migrations
-	files, err := migrations.ReadDir("schemas")
-	if err != nil {
-		slog.Error(`error reading migration files`, `Err`, err)
-		os.Exit(1)
-	}
-
 	migrateDirection := mysql.MigrateDirection(strings.ToUpper(*direction))
-	err = db.Migrate(files, migrateDirection)
+	err = db.Migrate("schemas", &files, migrateDirection)
 	if err != nil {
 		slog.Error(`error migrating mysql database`, `Err`, err)
 		os.Exit(1)
