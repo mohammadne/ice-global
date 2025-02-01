@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"log/slog"
 	"os"
@@ -11,8 +12,10 @@ import (
 	"github.com/mohammadne/ice-global/pkg/mysql"
 )
 
+//go:embed schemas/*.sql
+var migrations embed.FS
+
 func main() {
-	migration := flag.String("migration", "hacks/schemas", "The migration directory (default: hacks/schemas)")
 	direction := flag.String("direction", "", "Either 'UP' or 'DOWN'")
 	flag.Parse() // Parse the command-line flags
 
@@ -25,14 +28,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := mysql.Open(cfg.Mysql, "file://"+*migration)
+	db, err := mysql.Open(cfg.Mysql)
 	if err != nil {
 		slog.Error(`error connecting to mysql database`, `Err`, err)
 		os.Exit(1)
 	}
 
+	// Read the directory containing migrations
+	files, err := migrations.ReadDir("schemas")
+	if err != nil {
+		slog.Error(`error reading migration files`, `Err`, err)
+		os.Exit(1)
+	}
+
 	migrateDirection := mysql.MigrateDirection(strings.ToUpper(*direction))
-	err = db.Migrate(migrateDirection)
+	err = db.Migrate(files, migrateDirection)
 	if err != nil {
 		slog.Error(`error migrating mysql database`, `Err`, err)
 		os.Exit(1)

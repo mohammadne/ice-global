@@ -30,7 +30,7 @@ func main() {
 		panic(err)
 	}
 
-	mysql, err := mysql.Open(cfg.Mysql, "")
+	mysql, err := mysql.Open(cfg.Mysql)
 	if err != nil {
 		slog.Error(`error connecting to mysql database`, `Err`, err)
 		os.Exit(1)

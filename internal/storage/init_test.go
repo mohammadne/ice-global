@@ -17,7 +17,7 @@ func TestMain(t *testing.M) {
 		panic(err)
 	}
 
-	database, err = mysql.Open(config.Mysql, "")
+	database, err = mysql.Open(config.Mysql)
 	if err != nil {
 		panic(err)
 	}
