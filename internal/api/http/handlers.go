@@ -36,7 +36,7 @@ func (s *Server) showAddItemForm(c *gin.Context) {
 		if err != nil {
 			slog.Error("error while retrieving cart-items for the user", "Err", err)
 		} else {
-			result := make([]map[string]any, len(cartItems))
+			result := make([]map[string]any, 0, len(cartItems))
 			for _, cartItem := range cartItems {
 				if cartItem.Quantity <= 0 {
 					continue
@@ -89,6 +89,7 @@ func (s *Server) addItem(c *gin.Context) {
 
 	err = s.cartsService.AddItemToCart(c.Request.Context(), cartId.(int), addItemForm.ItemId, quantity)
 	if err != nil {
+		slog.Error("", "Err", err)
 		c.Redirect(302, "/?error=internal error for adding item to the cart")
 		return
 	}

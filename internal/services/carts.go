@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -111,6 +112,10 @@ func (c *carts) AllCartItemsByCartId(ctx context.Context, cartId int) ([]entitie
 
 	cartItems := make([]entities.CartItem, 0, len(storageCartItems))
 	for _, storageCartItem := range storageCartItems {
+		if storageCartItem.DeletedAt.Valid {
+			continue
+		}
+
 		cartItem := entities.CartItem{
 			Id:        storageCartItem.Id,
 			Cart:      &entities.Cart{},
@@ -151,33 +156,35 @@ func (c *carts) AddItemToCart(ctx context.Context, cartId, itemId, quantity int)
 			if err != nil {
 				return fmt.Errorf("error creating cart-item: %v", err)
 			}
+
+			return
 		}
 		return fmt.Errorf("error retrieving cart-item by cart-id and item-id: %v", err)
 	}
 
-	storageCartItem.Quantity += quantity
-	err = c.cartItemsStorage.UpdateCartItem(ctx, storageCartItem)
-	if err != nil {
-		return fmt.Errorf("error updating cart-item quantity: %v", err)
+	if storageCartItem.DeletedAt.Valid {
+		storageCartItem := storage.CartItem{
+			CartId:    cartId,
+			ItemId:    itemId,
+			Quantity:  quantity,
+			CreatedAt: time.Now(),
+		}
+
+		_, err = c.cartItemsStorage.CreateCartItem(ctx, &storageCartItem)
+		if err != nil {
+			return fmt.Errorf("error creating cart-item: %v", err)
+		}
+	} else {
+		storageCartItem.Quantity += quantity
+		storageCartItem.UpdatedAt = sql.NullTime{Time: time.Now(), Valid: true}
+		err = c.cartItemsStorage.UpdateCartItem(ctx, storageCartItem)
+		if err != nil {
+			return fmt.Errorf("error updating cart-item quantity: %v", err)
+		}
 	}
 
 	return nil
 }
-
-// 	if cartEntity.Status == entity.CartClosed {
-// 		c.Redirect(302, "/")
-// 		return
-// 	}
-
-// 	var cartItemEntity entity.CartItem
-
-// 	result = db.Where(" ID  = ?", cartItemID).First(&cartItemEntity)
-// 	if result.Error != nil {
-// 		c.Redirect(302, "/")
-// 		return
-// 	}
-
-// db.Delete(&cartItemEntity)
 
 var ErrorCartHasBeenClosed = errors.New("the cart has been closed")
 

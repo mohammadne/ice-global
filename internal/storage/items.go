@@ -82,7 +82,7 @@ func (i *items) AllItemsByItemIds(ctx context.Context, ids []int) (result []Item
 	}
 	expandedQuery = i.database.Rebind(expandedQuery)
 
-	rows, err := i.database.QueryContext(ctx, query, args...)
+	rows, err := i.database.QueryContext(ctx, expandedQuery, args...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrorItemNotFound

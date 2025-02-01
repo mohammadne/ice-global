@@ -44,7 +44,7 @@ var (
 
 func (ci *cartItems) CreateCartItem(ctx context.Context, cartItem *CartItem) (id int, err error) {
 	query := `
-	INSERT INTO cart_entities (cart_id, item_id, quantity, created_at)
+	INSERT INTO cart_items (cart_id, item_id, quantity, created_at)
 	VALUES (?, ?, ?, ?)`
 
 	result, err := ci.database.ExecContext(ctx, query,
@@ -140,11 +140,19 @@ func (ci *cartItems) UpdateCartItem(ctx context.Context, cartItem *CartItem) err
 }
 
 func (ci *cartItems) DeleteCartItemById(ctx context.Context, id int) error {
-	query := `DELETE FROM cart_items WHERE id = ?`
+	query := `
+	UPDATE cart_items SET deleted_at = ?
+	WHERE id = ?`
 
-	_, err := ci.database.ExecContext(ctx, query, id)
+	result, err := ci.database.ExecContext(ctx, query, time.Now(), id)
 	if err != nil {
 		return fmt.Errorf("error deleting cart-item from database: %v", err)
+	}
+
+	if counts, err := result.RowsAffected(); err != nil {
+		return err
+	} else if counts == 0 {
+		return errors.New("cart-item has not been deleted")
 	}
 
 	return nil
