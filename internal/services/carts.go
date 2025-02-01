@@ -14,10 +14,12 @@ type Carts interface {
 	RetrieveCartOptional(ctx context.Context, cookie string) (*entities.Cart, error)
 	RetrieveCartRequired(ctx context.Context, cookie string) (*entities.Cart, error)
 	AllCartItemsByCartId(ctx context.Context, cartId int) ([]entities.CartItem, error)
+	AddItemToCart(ctx context.Context, cartId, itemId, quantity int) error
+	DeleteCartItem(ctx context.Context, cartId, cartItemId int) (err error)
 }
 
-func NewCarts(cartItemsStorage storage.CartItems, cartsStorage storage.Carts) Carts {
-	return &carts{cartItemsStorage: cartItemsStorage, cartsStorage: cartsStorage}
+func NewCarts(cartItemsStorage storage.CartItems, cartsStorage storage.Carts, itemsStorage storage.Items) Carts {
+	return &carts{cartItemsStorage: cartItemsStorage, cartsStorage: cartsStorage, itemsStorage: itemsStorage}
 }
 
 type carts struct {
@@ -59,7 +61,7 @@ func (u *carts) RetrieveCartRequired(ctx context.Context, cookie string) (result
 		if err == storage.ErrorCartNotFound {
 			storageCart := &storage.Cart{
 				Cookie:    cookie,
-				Status:    entities.CartStatusOpen,
+				Status:    string(entities.CartStatusOpen),
 				CreatedAt: time.Now(),
 			}
 
@@ -84,20 +86,14 @@ func (u *carts) RetrieveCartRequired(ctx context.Context, cookie string) (result
 }
 
 func (c *carts) AllCartItemsByCartId(ctx context.Context, cartId int) ([]entities.CartItem, error) {
-	// storageCart, err := c.cartsStorage.RetrieveCartByCookieAndStatus(ctx, cookie, entities.CartStatusOpen)
-	// if err != nil {
-	// 	if err == storage.ErrorCartNotFound {
-	// 		return []entities.CartItem{}, nil
-	// 	}
-	// 	return nil, fmt.Errorf("error retrieving cart by user-id: %v", err)
-	// }
-
 	storageCartItems, err := c.cartItemsStorage.AllCartItemsByCartId(ctx, cartId)
 	if err != nil {
 		if err == storage.ErrorCartItemNotFound {
 			return []entities.CartItem{}, nil
 		}
 		return nil, fmt.Errorf("error retrieving cart-items by cart-id: %v", err)
+	} else if len(storageCartItems) == 0 {
+		return []entities.CartItem{}, nil
 	}
 
 	itemIds := make([]int, 0, len(storageCartItems))
@@ -138,4 +134,67 @@ func (c *carts) AllCartItemsByCartId(ctx context.Context, cartId int) ([]entitie
 	}
 
 	return cartItems, nil
+}
+
+func (c *carts) AddItemToCart(ctx context.Context, cartId, itemId, quantity int) (err error) {
+	storageCartItem, err := c.cartItemsStorage.RetrieveCartItemByCartIdAndItemId(ctx, cartId, itemId)
+	if err != nil {
+		if err == storage.ErrorCartItemNotFound {
+			storageCartItem := storage.CartItem{
+				CartId:    cartId,
+				ItemId:    itemId,
+				Quantity:  quantity,
+				CreatedAt: time.Now(),
+			}
+
+			_, err = c.cartItemsStorage.CreateCartItem(ctx, &storageCartItem)
+			if err != nil {
+				return fmt.Errorf("error creating cart-item: %v", err)
+			}
+		}
+		return fmt.Errorf("error retrieving cart-item by cart-id and item-id: %v", err)
+	}
+
+	storageCartItem.Quantity += quantity
+	err = c.cartItemsStorage.UpdateCartItem(ctx, storageCartItem)
+	if err != nil {
+		return fmt.Errorf("error updating cart-item quantity: %v", err)
+	}
+
+	return nil
+}
+
+// 	if cartEntity.Status == entity.CartClosed {
+// 		c.Redirect(302, "/")
+// 		return
+// 	}
+
+// 	var cartItemEntity entity.CartItem
+
+// 	result = db.Where(" ID  = ?", cartItemID).First(&cartItemEntity)
+// 	if result.Error != nil {
+// 		c.Redirect(302, "/")
+// 		return
+// 	}
+
+// db.Delete(&cartItemEntity)
+
+var ErrorCartHasBeenClosed = errors.New("the cart has been closed")
+
+func (c *carts) DeleteCartItem(ctx context.Context, cartId, cartItemId int) (err error) {
+	storageCart, err := c.cartsStorage.RetrieveCartById(ctx, cartId)
+	if err != nil {
+		return fmt.Errorf("error retrieving cart: %v", err)
+	}
+
+	if storageCart.Status == string(entities.CartStatusClosed) {
+		return ErrorCartHasBeenClosed
+	}
+
+	err = c.cartItemsStorage.DeleteCartItemById(ctx, cartItemId)
+	if err != nil {
+		return fmt.Errorf("error deleting cart-item: %v", err)
+	}
+
+	return nil
 }

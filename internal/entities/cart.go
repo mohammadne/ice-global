@@ -9,6 +9,6 @@ type Cart struct {
 type CartStatus string
 
 const (
-	CartStatusOpen   = "open"
-	CartStatusClosed = "closed"
+	CartStatusOpen   CartStatus = "open"
+	CartStatusClosed CartStatus = "closed"
 )

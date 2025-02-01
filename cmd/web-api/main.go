@@ -42,7 +42,7 @@ func main() {
 	itemsStorage := storage.NewItems(mysql)
 
 	// services
-	cartsService := services.NewCarts(cartItemsStorage, cartsStorage)
+	cartsService := services.NewCarts(cartItemsStorage, cartsStorage, itemsStorage)
 	itemsService := services.NewItems(itemsStorage)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

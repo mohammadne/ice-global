@@ -3,8 +3,11 @@ package http
 import (
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/mohammadne/ice-global/internal/services"
 )
 
 func (*Server) liveness(c *gin.Context) {
@@ -16,8 +19,16 @@ func (*Server) readiness(c *gin.Context) {
 }
 
 func (s *Server) showAddItemForm(c *gin.Context) {
+	items, err := s.itemsService.AllItems(c.Request.Context())
+	if err != nil {
+		slog.Error("error retrieving all-items")
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
 	data := map[string]any{
 		"Error": c.Query("error"),
+		"Items": items,
 	}
 
 	if cartId, exists := c.Get(CartKey); exists {
@@ -47,157 +58,74 @@ func (s *Server) showAddItemForm(c *gin.Context) {
 
 // -----------------------------------------------------
 
-// var itemPriceMapping = map[string]float64{
-// 	"shoe":  100,
-// 	"purse": 200,
-// 	"bag":   300,
-// 	"watch": 300,
-// }
+type CartItemForm struct {
+	ItemId   int    `form:"product"   binding:"required"`
+	Quantity string `form:"quantity"  binding:"required"`
+}
 
-// type CartItemForm struct {
-// 	Product  string `form:"product"   binding:"required"`
-// 	Quantity string `form:"quantity"  binding:"required"`
-// }
+func (s *Server) addItem(c *gin.Context) {
+	cartId, exists := c.Get(CartKey)
+	if !exists {
+		c.Redirect(302, "/?error="+"user is not authorized")
+		return
+	}
 
-// func (s *Server) addItem(c *gin.Context) {
-// 	cookieRaw, exists := c.Get(CookieName)
-// 	if !exists {
-// 		c.JSON(http.StatusUnauthorized, nil) // TODO
-// 		return
-// 	}
-// 	cookie := cookieRaw.(*http.Cookie)
+	if c.Request.Body == nil {
+		c.Redirect(302, "/?error="+"body can not be empty")
+		return
+	}
 
-// 	db := db.GetDatabase()
+	addItemForm := &CartItemForm{}
+	if err := binding.FormPost.Bind(c.Request, addItemForm); err != nil {
+		c.Redirect(302, "/?error="+err.Error())
+		return
+	}
 
-// 	var isCartNew bool
-// 	var cartEntity entity.CartEntity
-// 	result := db.Where(fmt.Sprintf("status = '%s' AND session_id = '%s'", entity.CartOpen, cookie.Value)).First(&cartEntity)
+	quantity, err := strconv.Atoi(addItemForm.Quantity)
+	if err != nil {
+		c.Redirect(302, "/?error=invalid quantity")
+		return
+	}
 
-// 	if result.Error != nil {
-// 		if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-// 			c.Redirect(302, "/")
-// 			return
-// 		}
-// 		isCartNew = true
-// 		cartEntity = entity.CartEntity{
-// 			SessionID: cookie.Value,
-// 			Status:    entity.CartOpen,
-// 		}
-// 		db.Create(&cartEntity)
-// 	}
+	err = s.cartsService.AddItemToCart(c.Request.Context(), cartId.(int), addItemForm.ItemId, quantity)
+	if err != nil {
+		c.Redirect(302, "/?error=internal error for adding item to the cart")
+		return
+	}
 
-// 	addItemForm, err := getCartItemForm(c)
-// 	if err != nil {
-// 		c.Redirect(302, "/?error="+err.Error())
-// 		return
-// 	}
-
-// 	item, ok := itemPriceMapping[addItemForm.Product]
-// 	if !ok {
-// 		c.Redirect(302, "/?error=invalid item name")
-// 		return
-// 	}
-
-// 	quantity, err := strconv.ParseInt(addItemForm.Quantity, 10, 0)
-// 	if err != nil {
-// 		c.Redirect(302, "/?error=invalid quantity")
-// 		return
-// 	}
-
-// 	var cartItemEntity entity.CartItem
-// 	if isCartNew {
-// 		cartItemEntity = entity.CartItem{
-// 			CartID:      cartEntity.ID,
-// 			ProductName: addItemForm.Product,
-// 			Quantity:    int(quantity),
-// 			Price:       item * float64(quantity),
-// 		}
-// 		db.Create(&cartItemEntity)
-// 	} else {
-// 		result = db.Where(" cart_id = ? and product_name  = ?", cartEntity.ID, addItemForm.Product).First(&cartItemEntity)
-
-// 		if result.Error != nil {
-// 			if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-// 				c.Redirect(302, "/")
-// 				return
-// 			}
-// 			cartItemEntity = entity.CartItem{
-// 				CartID:      cartEntity.ID,
-// 				ProductName: addItemForm.Product,
-// 				Quantity:    int(quantity),
-// 				Price:       item * float64(quantity),
-// 			}
-// 			db.Create(&cartItemEntity)
-
-// 		} else {
-// 			cartItemEntity.Quantity += int(quantity)
-// 			cartItemEntity.Price += item * float64(quantity)
-// 			db.Save(&cartItemEntity)
-// 		}
-// 	}
-
-// 	c.Redirect(302, "/")
-// }
-
-// func getCartItemForm(c *gin.Context) (*CartItemForm, error) {
-// 	if c.Request.Body == nil {
-// 		return nil, fmt.Errorf("body cannot be nil")
-// 	}
-
-// 	form := &CartItemForm{}
-
-// 	if err := binding.FormPost.Bind(c.Request, form); err != nil {
-// 		log.Println(err.Error())
-// 		return nil, err
-// 	}
-
-// 	return form, nil
-// }
+	c.Redirect(302, "/")
+}
 
 // -----------------------------------------------------
 
-// func (s *Server) deleteCartItem(c *gin.Context) {
-// 	cookieRaw, exists := c.Get(CookieName)
-// 	if !exists {
-// 		c.JSON(http.StatusUnauthorized, nil) // TODO
-// 		return
-// 	}
-// 	cookie := cookieRaw.(*http.Cookie)
+func (s *Server) deleteCartItem(c *gin.Context) {
+	cartId, exists := c.Get(CartKey)
+	if !exists {
+		c.Redirect(302, "/?error="+"user is not authorized")
+		return
+	}
 
-// 	cartItemIDString := c.Query("cart_item_id")
-// 	if cartItemIDString == "" {
-// 		c.Redirect(302, "/")
-// 		return
-// 	}
+	cartItemIdString := c.Query("cart_item_id")
+	if cartItemIdString == "" {
+		c.Redirect(302, "/")
+		return
+	}
 
-// 	db := db.GetDatabase()
+	cartItemId, err := strconv.Atoi(cartItemIdString)
+	if err != nil {
+		c.Redirect(302, "/")
+		return
+	}
 
-// 	var cartEntity entity.CartEntity
-// 	result := db.Where(fmt.Sprintf("status = '%s' AND session_id = '%s'", entity.CartOpen, cookie.Value)).First(&cartEntity)
-// 	if result.Error != nil {
-// 		c.Redirect(302, "/")
-// 		return
-// 	}
+	err = s.cartsService.DeleteCartItem(c.Request.Context(), cartId.(int), cartItemId)
+	if err != nil {
+		if err == services.ErrorCartHasBeenClosed {
+			c.Redirect(302, "/?error="+"you can't remove from an closed cart")
+			return
+		}
+		c.Redirect(302, "/?error="+"cart-item has not been removed")
+		return
+	}
 
-// 	if cartEntity.Status == entity.CartClosed {
-// 		c.Redirect(302, "/")
-// 		return
-// 	}
-
-// 	cartItemID, err := strconv.Atoi(cartItemIDString)
-// 	if err != nil {
-// 		c.Redirect(302, "/")
-// 		return
-// 	}
-
-// 	var cartItemEntity entity.CartItem
-
-// 	result = db.Where(" ID  = ?", cartItemID).First(&cartItemEntity)
-// 	if result.Error != nil {
-// 		c.Redirect(302, "/")
-// 		return
-// 	}
-
-// 	db.Delete(&cartItemEntity)
-// 	c.Redirect(302, "/")
-// }
+	c.Redirect(302, "/")
+}

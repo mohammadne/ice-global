@@ -21,6 +21,7 @@ type Cart struct {
 
 type Carts interface {
 	CreateCart(ctx context.Context, cart *Cart) (id int, err error)
+	RetrieveCartById(ctx context.Context, id int) (*Cart, error)
 	RetrieveCartByCookieAndStatus(ctx context.Context, cookie string, status entities.CartStatus) (*Cart, error)
 }
 
@@ -37,19 +38,19 @@ type carts struct {
 func (c *carts) CreateCart(ctx context.Context, cart *Cart) (id int, err error) {
 	query := `
 	INSERT INTO cart_entities (session_id, status, created_at)
-	VALUES (:session_id, :status, :created_at)
-	RETURNING id INTO :id_out`
+	VALUES (?, ?, ?)`
 
-	_, err = c.database.ExecContext(ctx, query,
-		sql.Named("session_id", cart.Cookie),
-		sql.Named("status", cart.Cookie),
-		sql.Named("created_at", cart.CreatedAt),
-		sql.Named("id_out", sql.Out{Dest: &id}),
+	result, err := c.database.ExecContext(ctx, query,
+		cart.Cookie, cart.Status, cart.CreatedAt,
 	)
-
 	if err != nil {
 		return -1, fmt.Errorf("error insert cart into database: %v", err)
 	}
+	id64, err := result.LastInsertId()
+	if err != nil {
+		return -1, fmt.Errorf("error retrieving last inserted id: %v", err)
+	}
+	id = int(id64)
 
 	return id, nil
 }
@@ -58,21 +59,40 @@ var (
 	ErrorCartNotFound = errors.New("cart not found")
 )
 
-func (c *carts) RetrieveCartByCookieAndStatus(ctx context.Context, cookie string, status entities.CartStatus,
-) (result *Cart, err error) {
+func (c *carts) RetrieveCartById(ctx context.Context, id int) (result *Cart, err error) {
 	query := `
 	SELECT id, session_id, status, created_at, deleted_at
 	FROM cart_entities
-	WHERE session_id = :session_id AND status = :status`
+	WHERE id = ?`
 
 	result = &Cart{}
-	err = c.database.QueryRowContext(ctx, query, sql.Named("session_id", cookie), sql.Named("status", status)).Scan(
+	err = c.database.QueryRowContext(ctx, query, id).Scan(
 		&result.Id, &result.Cookie, &result.Status, &result.CreatedAt, &result.DeletedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrorCartNotFound
 		}
-		return nil, fmt.Errorf("error retrieing cart: %v", err)
+		return nil, fmt.Errorf("error retrieving cart: %v", err)
+	}
+
+	return result, nil
+}
+
+func (c *carts) RetrieveCartByCookieAndStatus(ctx context.Context, cookie string, status entities.CartStatus,
+) (result *Cart, err error) {
+	query := `
+	SELECT id, session_id, status, created_at, deleted_at
+	FROM cart_entities
+	WHERE session_id = ? AND status = ?`
+
+	result = &Cart{}
+	err = c.database.QueryRowContext(ctx, query, cookie, status).Scan(
+		&result.Id, &result.Cookie, &result.Status, &result.CreatedAt, &result.DeletedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrorCartNotFound
+		}
+		return nil, fmt.Errorf("error retrieving cart: %v", err)
 	}
 
 	return result, nil

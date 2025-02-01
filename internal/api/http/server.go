@@ -47,8 +47,8 @@ func New(cartsService services.Carts, itemsService services.Items) *Server {
 	healthzRouter.GET("/readiness", s.readiness)
 
 	s.router.GET("/", s.OptionalCookie, s.showAddItemForm)
-	// s.router.POST("/add-item", s.RequiredCookie, s.addItem)
-	// s.router.GET("/remove-cart-item", s.RequiredCookie, s.deleteCartItem)
+	s.router.POST("/add-item", s.RequiredCookie, s.addItem)
+	s.router.GET("/remove-cart-item", s.RequiredCookie, s.deleteCartItem)
 
 	return s
 }
