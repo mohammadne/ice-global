@@ -11,10 +11,12 @@ import (
 
 	"github.com/mohammadne/ice-global/internal"
 	"github.com/mohammadne/ice-global/pkg/mysql"
+	"github.com/mohammadne/ice-global/pkg/redis"
 )
 
 type Config struct {
 	Mysql *mysql.Config `required:"true"`
+	Redis *redis.Config `required:"true"`
 }
 
 func Load(print bool) (config Config, err error) {

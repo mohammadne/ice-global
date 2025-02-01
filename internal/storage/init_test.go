@@ -5,10 +5,12 @@ import (
 
 	"github.com/mohammadne/ice-global/internal/config"
 	"github.com/mohammadne/ice-global/pkg/mysql"
+	"github.com/mohammadne/ice-global/pkg/redis"
 )
 
 var (
-	database *mysql.Mysql
+	mysqlDatabase *mysql.Mysql
+	redisDatabase *redis.Redis
 )
 
 func TestMain(t *testing.M) {
@@ -17,7 +19,7 @@ func TestMain(t *testing.M) {
 		panic(err)
 	}
 
-	database, err = mysql.Open(config.Mysql)
+	mysqlDatabase, err = mysql.Open(config.Mysql)
 	if err != nil {
 		panic(err)
 	}

@@ -10,6 +10,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/mohammadne/ice-global/pkg/mysql"
+	"github.com/mohammadne/ice-global/pkg/redis"
 )
 
 type Item struct {
@@ -25,14 +26,13 @@ type Items interface {
 	AllItemsByItemIds(ctx context.Context, ids []int) ([]Item, error)
 }
 
-func NewItems(mysql *mysql.Mysql) Items {
-	return &items{
-		database: mysql,
-	}
+func NewItems(mysql *mysql.Mysql, redis *redis.Redis) Items {
+	return &items{mysql: mysql, redis: redis}
 }
 
 type items struct {
-	database *mysql.Mysql
+	mysql *mysql.Mysql
+	redis *redis.Redis
 }
 
 var (
@@ -44,7 +44,7 @@ func (i *items) AllItems(ctx context.Context) (result []Item, err error) {
 	SELECT id, name, price, created_at, updated_at
 	FROM items`
 
-	rows, err := i.database.QueryContext(ctx, query)
+	rows, err := i.mysql.QueryContext(ctx, query)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrorItemNotFound
@@ -80,9 +80,9 @@ func (i *items) AllItemsByItemIds(ctx context.Context, ids []int) (result []Item
 	if err != nil {
 		log.Fatalf("Error preparing query: %v", err)
 	}
-	expandedQuery = i.database.Rebind(expandedQuery)
+	expandedQuery = i.mysql.Rebind(expandedQuery)
 
-	rows, err := i.database.QueryContext(ctx, expandedQuery, args...)
+	rows, err := i.mysql.QueryContext(ctx, expandedQuery, args...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrorItemNotFound

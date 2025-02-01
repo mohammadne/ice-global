@@ -11,7 +11,7 @@ import (
 )
 
 func TestCarts(t *testing.T) {
-	carts := storage.NewCarts(database)
+	carts := storage.NewCarts(mysqlDatabase)
 
 	t.Run("retrieve-cart-by-cookie-and-status", func(t *testing.T) {
 		ccokie := ""

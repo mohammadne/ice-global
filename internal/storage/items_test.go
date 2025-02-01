@@ -10,7 +10,7 @@ import (
 )
 
 func TestItems(t *testing.T) {
-	carts := storage.NewItems(database)
+	carts := storage.NewItems(mysqlDatabase, redisDatabase)
 
 	t.Run("retrieve-cart-by-cookie-and-status", func(t *testing.T) {
 		result, err := carts.AllItems(context.TODO())

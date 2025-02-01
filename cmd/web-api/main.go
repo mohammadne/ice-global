@@ -16,6 +16,7 @@ import (
 	"github.com/mohammadne/ice-global/internal/services"
 	"github.com/mohammadne/ice-global/internal/storage"
 	"github.com/mohammadne/ice-global/pkg/mysql"
+	"github.com/mohammadne/ice-global/pkg/redis"
 )
 
 func main() {
@@ -36,10 +37,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	redis, err := redis.Open(cfg.Redis)
+	if err != nil {
+		slog.Error(`error connecting to redis database`, `Err`, err)
+		os.Exit(1)
+	}
+
 	// storages
 	cartItemsStorage := storage.NewCartItems(mysql)
 	cartsStorage := storage.NewCarts(mysql)
-	itemsStorage := storage.NewItems(mysql)
+	itemsStorage := storage.NewItems(mysql, redis)
 
 	// services
 	cartsService := services.NewCarts(cartItemsStorage, cartsStorage, itemsStorage)
