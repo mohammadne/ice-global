@@ -1,8 +1,0 @@
-CREATE TABLE IF NOT EXISTS cart_entities (
-    id INTEGER NOT NULL AUTO_INCREMENT,
-    session_id VARCHAR(255) UNIQUE NOT NULL,
-    status VARCHAR(32) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    deleted_at TIMESTAMP,
-    PRIMARY KEY (id)
-);
