@@ -1,0 +1,41 @@
+settings:
+  kubeContext: kind-ice-global
+  maxHistory: 10
+  timeout: 6000
+
+namespaces:
+  ice-global:
+    labels:
+      managed-by: helmsman
+
+helmRepos:
+  bitnami: https://charts.bitnami.com/bitnami
+
+apps:
+  ice-global:
+    enabled: true
+    namespace: ice-global
+    chart: "./ice-global"
+    version: "0.1.0"
+    secretsFiles:
+      - ./ice-global/secrets.yaml
+
+  mysql:
+    enabled: true
+    namespace: ice-global
+    chart: bitnami/mysql
+    version: "9.1.0"
+    valuesFile: ./mysql/values.yaml
+    wait: true
+    secretsFiles:
+      - ./mysql/secrets.yaml
+
+  redis:
+    enabled: true
+    chart: bitnami/redis
+    version: "17.1.0"
+    valuesFile: ./redis/values.yaml
+    namespace: ice-global
+    wait: true
+    secretsFiles:
+      - ./redis/secrets.yaml

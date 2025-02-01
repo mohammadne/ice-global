@@ -1,0 +1,5 @@
+mysqlRootPassword: "mysql-root-password"
+mysqlPassword: "mysql-password"
+persistence:
+  enabled: true
+  size: 8Gi
