@@ -1,6 +1,0 @@
-CREATE TABLE users (
-    id INTEGER NOT NULL,
-    cookie VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (id)
-);

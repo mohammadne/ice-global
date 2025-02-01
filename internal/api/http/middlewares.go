@@ -12,7 +12,7 @@ import (
 
 const (
 	CookieName = "ice_session_id"
-	UserKey    = "user_id"
+	CartKey    = "cart_id"
 )
 
 func (s *Server) OptionalCookie(c *gin.Context) {
@@ -21,12 +21,12 @@ func (s *Server) OptionalCookie(c *gin.Context) {
 		cookieValue := strconv.FormatInt(time.Now().UnixNano(), 10)
 		c.SetCookie(CookieName, cookieValue, 3600, "/", "localhost", false, true)
 	} else {
-		// find the user and if exists, put the user-id
-		user, err := s.usersService.RetrieveUserOptional(c.Request.Context(), cookie.Value)
+		// find the cart and if exists, put the cart-id
+		cart, err := s.cartsService.RetrieveCartOptional(c.Request.Context(), cookie.Value)
 		if err != nil {
-			slog.Error("error retrieving user", "Err", err)
-		} else if user != nil {
-			c.Set(UserKey, user.Id)
+			slog.Error("error retrieving cart", "Err", err)
+		} else if cart != nil {
+			c.Set(CartKey, cart.Id)
 		}
 	}
 	c.Next()
@@ -39,12 +39,12 @@ func (s *Server) RequiredCookie(c *gin.Context) {
 		return
 	}
 
-	user, err := s.usersService.RetrieveUserRequired(c.Request.Context(), cookie.Value)
+	cart, err := s.cartsService.RetrieveCartRequired(c.Request.Context(), cookie.Value)
 	if err != nil {
 		c.Redirect(302, "/")
 		return
 	}
 
-	c.Set(UserKey, user.Id)
+	c.Set(CartKey, cart.Id)
 	c.Next()
 }

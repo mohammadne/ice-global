@@ -20,10 +20,8 @@ func (s *Server) showAddItemForm(c *gin.Context) {
 		"Error": c.Query("error"),
 	}
 
-	userIdRaw, exists := c.Get(UserKey)
-	if exists {
-		userId := userIdRaw.(int)
-		cartItems, err := s.cartsService.AllCartItemsByUserId(c.Request.Context(), userId)
+	if cartId, exists := c.Get(CartKey); exists {
+		cartItems, err := s.cartsService.AllCartItemsByCartId(c.Request.Context(), cartId.(int))
 		if err != nil {
 			slog.Error("error while retrieving cart-items for the user", "Err", err)
 		} else {

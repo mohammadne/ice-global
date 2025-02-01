@@ -21,18 +21,16 @@ type Server struct {
 	// services
 	cartsService services.Carts
 	itemsService services.Items
-	usersService services.Users
 }
 
 //go:embed templates/*
 var templates embed.FS
 
-func New(cartsService services.Carts, itemsService services.Items, usersService services.Users) *Server {
+func New(cartsService services.Carts, itemsService services.Items) *Server {
 	s := &Server{
 		router:       gin.Default(),
 		cartsService: cartsService,
 		itemsService: itemsService,
-		usersService: usersService,
 	}
 
 	// Parse the embedded templates

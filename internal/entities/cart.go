@@ -2,7 +2,7 @@ package entities
 
 type Cart struct {
 	Id     int
-	UserId int
+	Cookie string
 	Status CartStatus
 }
 
