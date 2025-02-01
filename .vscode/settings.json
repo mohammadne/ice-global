@@ -1,7 +1,4 @@
 {
-    "go.testEnvVars": {
-        "LD_LIBRARY_PATH": "/home/mohammadne/Workspace/ap/platform/apshop/hacks/instantclient/lib"
-    },
     "go.testTimeout": "1200s",
     "go.testFlags": [
         "-v",

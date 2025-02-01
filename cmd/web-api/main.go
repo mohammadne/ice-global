@@ -25,7 +25,7 @@ func main() {
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true, Level: slog.LevelInfo})))
 	cmd.BuildInfo()
 
-	cfg, err := config.Load(true)
+	cfg, err := config.LoadDefaults(true, "")
 	if err != nil {
 		panic(err)
 	}

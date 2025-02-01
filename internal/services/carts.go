@@ -114,6 +114,8 @@ func (c *carts) AllCartItemsByCartId(ctx context.Context, cartId int) ([]entitie
 	for _, storageCartItem := range storageCartItems {
 		if storageCartItem.DeletedAt.Valid {
 			continue
+		} else if storageCartItem.Quantity <= 0 {
+			continue
 		}
 
 		cartItem := entities.CartItem{

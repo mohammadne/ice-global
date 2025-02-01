@@ -1,0 +1,23 @@
+services:
+  redis:
+    image: redis:7.4.0-alpine3.20
+    ports:
+      - "4000:6379"
+    volumes:
+      - redis_data:/data
+
+  mysql:
+    image: mysql:9.2.0
+    ports:
+      - "4001:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=9xz3jrd8wf
+      - MYSQL_DATABASE=ice_db
+      - MYSQL_USER=ice_user
+      - MYSQL_PASSWORD=9xz3jrd8wf
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+  redis_data:

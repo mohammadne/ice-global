@@ -36,20 +36,7 @@ func (s *Server) showAddItemForm(c *gin.Context) {
 		if err != nil {
 			slog.Error("error while retrieving cart-items for the user", "Err", err)
 		} else {
-			result := make([]map[string]any, 0, len(cartItems))
-			for _, cartItem := range cartItems {
-				if cartItem.Quantity <= 0 {
-					continue
-				}
-				resultItem := map[string]any{
-					"ID":       cartItem.Id,
-					"Quantity": cartItem.Quantity,
-					"Price":    cartItem.Item.Price * cartItem.Quantity,
-					"Product":  cartItem.Item.Name,
-				}
-				result = append(result, resultItem)
-			}
-			data["CartItems"] = result
+			data["CartItems"] = cartItems
 		}
 	}
 
@@ -58,8 +45,8 @@ func (s *Server) showAddItemForm(c *gin.Context) {
 
 // -----------------------------------------------------
 
-type CartItemForm struct {
-	ItemId   int    `form:"product"   binding:"required"`
+type ItemForm struct {
+	ItemId   int    `form:"item_id"   binding:"required"`
 	Quantity string `form:"quantity"  binding:"required"`
 }
 
@@ -68,14 +55,12 @@ func (s *Server) addItem(c *gin.Context) {
 	if !exists {
 		c.Redirect(302, "/?error="+"user is not authorized")
 		return
-	}
-
-	if c.Request.Body == nil {
+	} else if c.Request.Body == nil {
 		c.Redirect(302, "/?error="+"body can not be empty")
 		return
 	}
 
-	addItemForm := &CartItemForm{}
+	addItemForm := &ItemForm{}
 	if err := binding.FormPost.Bind(c.Request, addItemForm); err != nil {
 		c.Redirect(302, "/?error="+err.Error())
 		return
