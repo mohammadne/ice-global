@@ -1,0 +1,70 @@
+services:
+  traefik:
+    image: traefik:v3.3.2
+    container_name: traefik
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - --entrypoints.websecure.address=:443
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=mohammadne.dev@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"       # Temporarily expose HTTP for redirection
+      - "443:443"     # HTTPS
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./letsencrypt:/letsencrypt"
+    networks:
+      - internal
+
+  redis:
+    image: redis:7.4.0-alpine3.20
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+
+  mysql:
+    image: mysql:9.2.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=9xz3jrd8wf
+      - MYSQL_DATABASE=ice_db
+      - MYSQL_USER=ice_user
+      - MYSQL_PASSWORD=9xz3jrd8wf
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - internal
+
+  ice_global:
+    image: ghcr.io/mohammadne/ice-global
+    restart: unless-stopped
+    environment:
+      - ICE_GLOBAL_MYSQL_HOST="127.0.0.1"
+      - ICE_GLOBAL_MYSQL_PORT="3306"
+      - ICE_GLOBAL_MYSQL_USER="ice_user"
+      - ICE_GLOBAL_MYSQL_PASSWORD="9xz3jrd8wf"
+      - ICE_GLOBAL_MYSQL_DATABASE="ice_db"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ice_global.rule=Host(`ice-global.mohammadne.ir`)"
+      - "traefik.http.routers.ice_global.entrypoints=websecure"
+      - "traefik.http.routers.ice_global.tls.certresolver=myresolver"
+      - "traefik.http.services.ice_global.loadbalancer.server.port=8088"
+    depends_on:
+      - redis
+      - mysql
+    networks:
+      - internal
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  internal:
+    driver: bridge
