@@ -1,21 +1,24 @@
+
 # ICE Global
 
-![go-version](https://img.shields.io/badge/Golang-1.23-66ADD8?style=for-the-badge&logo=go)
-![app-version](https://img.shields.io/github/v/tag/mohammadne/ice-global?sort=semver&style=for-the-badge&logo=github)
-![coverage](https://img.shields.io/codecov/c/github/mohammadne/ice-global?logo=codecov&style=for-the-badge)
-![repo-size](https://img.shields.io/github/repo-size/mohammadne/ice-global?logo=github&style=for-the-badge)
+![Go Version](https://img.shields.io/badge/Golang-1.23-66ADD8?style=for-the-badge&logo=go)
+![App Version](https://img.shields.io/github/v/tag/mohammadne/ice-global?sort=semver&style=for-the-badge&logo=github)
+![Coverage](https://img.shields.io/codecov/c/github/mohammadne/ice-global?logo=codecov&style=for-the-badge)
+![Repo Size](https://img.shields.io/github/repo-size/mohammadne/ice-global?logo=github&style=for-the-badge)
 
 ## Introduction
 
-The `ICE Global` is a simple shopping cart manager for handling user cart iems and this Project was part of an [interview refactor](https://git.ice.global/packages/golang-interview-refactor) for the ICE Global.
+`ICE Global` is a simple shopping cart manager that allows users to manage cart items. This project was part of an [interview refactor](https://git.ice.global/packages/golang-interview-refactor) for ICE Global.
 
-The application has been hosted on `https://ice-global.mohammadne.ir` 🚀
+The application is live at [https://ice-global.mohammadne.ir](https://ice-global.mohammadne.ir) 🚀
 
-![Shopping cart manager](assets/application.png)
+![Shopping Cart Manager](assets/application.png)
 
-### Architecture
+## Architecture Overview
 
-```tree
+The project is organized as follows:
+
+```bash
 > tree
 .
 ├── cmd
@@ -31,79 +34,97 @@ The application has been hosted on `https://ice-global.mohammadne.ir` 🚀
 │   │   └── http
 │   ├── config
 │   ├── entities
-│   ├── services
-│   └── storage
+│   ├── repositories
+│   │   ├── cache
+│   │   └── storage
+│   └── services
 └── pkg
     ├── mysql
     └── redis
 ```
 
-#### CI
+### Continuous Integration (CI)
 
-I have used `Github Action` to build the image which uploads it into `ghcr.io` registry.
+CI for this project is managed using `GitHub Actions`. The process builds the Docker image and uploads it to the `ghcr.io` registry.
 
-#### Deployments
+### Deployments
 
-I have deployed the application via `docker-compose`, the docker directory contains 2 compose file which we can use `.local` for resolving depencies for local development and the `.prod` for deploying the whole application into a server via docker-compose file.
+The application can be deployed using `docker-compose`:
 
-Also I have developed a `k8s` directory which can deploy the apploication via `helmsman` and `helm` charts. for deploying the ice-global I have setup a kubernetes cluster via `Kind`.
+- **Local Development:** Use the `.local` compose file to resolve dependencies locally.
+- **Production:** The `.prod` compose file is designed for deploying the application to a server.
 
-#### API
+Additionally, a Kubernetes setup (`k8s/`) is provided for deploying the application with `helmsman` and `helm` charts. The Kubernetes cluster is set up using `Kind`.
 
-for the api layer we at this stage we only have `http` handler and I have used `embed` for embedding template files,the pervious design used an absolute-path which causes problems in the deployment.
+### API
 
-As pervious I have used the `Gin` engine and I don't see any benefit for changing the http engine, but in high trouphot systems like `Snapp` which I have exprience in it, they using frameworks based on `fast http` like `fiber` but here the Gin was enough.
+The API layer currently only supports HTTP handlers. Template files are embedded using the `embed` package, replacing the previous design that used absolute paths, which caused deployment issues.
 
-Also I have developed a `middleware` to decouple `cookie` checking for users and extract theses codes into some middlewares which makes our code much more cleaner and maintanable.
+Although `Gin` was chosen as the HTTP engine, other high-throughput frameworks like `Fiber` (based on `fastHTTP`) could be used for more demanding systems. However, `Gin` is sufficient for this application’s needs.
 
-**NOTE:** There was some confiusions about term `session` which is was used incorrectly instead of cookie, in code I have changed this term but for the database I put the term `session_id` unchanged.
+A custom middleware was developed to handle cookie checking for users, improving code organization and maintainability.
 
-#### Config
+> **Note:** The term `session` was incorrectly used for cookies in some parts of the code. This term was updated, but in the database, `session_id` remains unchanged for backward compatibility.
 
-For reading configurations I have used a very simple package named `envconfig` to avoid any hard coding configuration into the code. for much more advanded usecases we can use other tools like `koanf` but for our case I see the envconfig enough.
+### Configuration
 
-#### Services
+Configuration is managed using the `envconfig` package to avoid hardcoded values. For more complex use cases, tools like `koanf` could be used, but `envconfig` is sufficient for this project.
 
-The services diectory acts as `usecases` in the clean-architecture which contains all the business-logic stuffs and the outer layers like http(gin) is unaware of any business-logic of the application. the http layer only works with queries, arguments, user input validation and ... .
+### Services
 
-#### Storage
+The `services` directory is designed to handle the business logic in the application, following Clean Architecture principles. The HTTP layer (e.g., `Gin`) is isolated from business logic, only handling queries, user input validation, and other presentation-layer concerns.
 
-As pervious I have used mysql but with some changes:
+### Storage
 
-1. I have changed the `gorm`
-2. develop migrations logic
+MySQL is used as the primary database. Changes include:
 
-In my attitude if we can use raw sql queries, it give us lot's of benefits:
+1. Switching from `gorm` to raw SQL queries for improved performance and readability.
+2. Developing migration logic to handle schema changes.
 
-1. more readable and much more cleaner
-2. more performance
-3. having more optimized queries like you want different lists of a table with some atributes, if you have raw sql queries you can optimize your sql queries based on given attributes.
-4. readable by everyone specially by DBAs.
+Benefits of using raw SQL:
 
-#### Cache
+- **Readability:** Queries are clearer and more intuitive.
+- **Performance:** Raw SQL allows for better optimization, especially with complex queries.
+- **Flexibility:** You can optimize SQL queries based on specific attributes.
+- **DBA Friendly:** DBAs can easily understand and modify raw SQL.
 
-I have used Redis cache for caching items and prohibit access to items of the primary database each time.
+### Cache
 
-As you know the Redis is an in an in-memory storage which read-writes are much more faster rather than databases which stores the data on the storage like mysql in this case.
+Redis is used for caching cart items, reducing the need to access the primary database on every request. Since Redis is an in-memory store, read and write operations are much faster compared to traditional databases like MySQL.
 
-#### Packages
+### Project Structure
 
-In my codes I like to put my general package creation like mysql and redis (in this case) into the `/pkg` directory and putting the business logic only related to this project into `/internal` directoy which is something recommanded by Go communities.
+In this project, the following structure is used:
+
+- **`/pkg`**: Contains general-purpose packages like `mysql` and `redis`.
+- **`/internal`**: Contains business logic and project-specific code.
+
+This structure is recommended by the Go community, separating general utility code from domain-specific logic.
 
 ### Data Migration
+
+To migrate the database schema, run the following command:
 
 ```sh
 go run cmd/migration/main.go --direction up
 ```
 
-The command above will migrate the current data schemas to a newer and better data schemas.
+This will apply the necessary schema changes.
 
-At first we have the `01_initial.up.sql` sql file, as you can see there is no any index and ..., at the given steps we migrate the existing data, add `items` table and ... to migrate to the new design. you can see the exact migration steps by reading migration files.
+Migration steps include:
 
-#### Why migration was necessary?
+1. Adding a relationship constraint between `cart_items.cart_id` and `cart_entities.cart_id`.
+2. Creating a new `items` table for better organization and to avoid hardcoded values in the code.
+3. Ensuring `session_id` is unique across tables.
+4. Replacing the `total` column in `cart_entities` with a more normalized design.
+5. Using `TIMESTAMP` instead of `DATETIME` for better tracking of changes over time.
 
-1. In the `cart_items` the cart_id has no relation cfonstraint to `cart_entities` table.
-2. Add `items` table to make `cart_items` more concise and cleaner and remove hard codes in the `pkg/calculator/add_item.go`.
-3. The columnd `session_id` should be unique accross table.
-4. The `total` column in `cart_entities` makes the table un-normalize because this field can be calculated from `cart_items` and the items associated with an `cart_entities`.
-5. for tracking changes it's better to use `TIMESTAMP` rather than `DATETIME`.
+### Why Migrations Were Necessary
+
+Several issues in the original schema required migration:
+
+1. The `cart_id` in the `cart_items` table had no foreign key constraint.
+2. The `items` table was added to streamline the `cart_items` structure.
+3. The `session_id` column should be unique across all related tables.
+4. The `total` column in `cart_entities` made the table denormalized; this information can be derived from other related tables.
+5. Using `TIMESTAMP` instead of `DATETIME` offers better tracking of changes over time.
