@@ -41,7 +41,7 @@ services:
       - internal
 
   ice_global:
-    image: ghcr.io/mohammadne/ice-global
+    image: ghcr.io/mohammadne/ice-global:v0.0.2
     restart: unless-stopped
     environment:
       - ICE_GLOBAL_MYSQL_HOST="127.0.0.1"
