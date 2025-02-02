@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/mohammadne/ice-global/cmd"
+	"github.com/mohammadne/ice-global/internal"
 	"github.com/mohammadne/ice-global/internal/api/http"
 	"github.com/mohammadne/ice-global/internal/config"
 	"github.com/mohammadne/ice-global/internal/repositories/cache"
@@ -22,14 +23,28 @@ import (
 
 func main() {
 	httpPort := flag.Int("http-port", 8088, "The server port which handles http requests (default: 8088)")
+	environmentRaw := flag.String("environment", "", "The environment (default: local)")
 	flag.Parse() // Parse the command-line flags
+
+	environment := internal.ToEnvironment(*environmentRaw)
 
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true, Level: slog.LevelInfo})))
 	cmd.BuildInfo()
 
-	cfg, err := config.Load(true)
-	if err != nil {
-		panic(err)
+	var cfg config.Config
+	var err error
+
+	switch environment {
+	case internal.EnvironmentLocal:
+		cfg, err = config.LoadDefaults(true, "")
+		if err != nil {
+			panic(err)
+		}
+	default:
+		cfg, err = config.Load(true)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	mysql, err := mysql.Open(cfg.Mysql)
