@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/mohammadne/ice-global/internal/entities"
-	"github.com/mohammadne/ice-global/internal/storage"
+	"github.com/mohammadne/ice-global/internal/repositories/storage"
 )
 
 type Carts interface {

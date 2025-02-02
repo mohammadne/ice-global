@@ -13,8 +13,8 @@ import (
 	"github.com/mohammadne/ice-global/cmd"
 	"github.com/mohammadne/ice-global/internal/api/http"
 	"github.com/mohammadne/ice-global/internal/config"
+	"github.com/mohammadne/ice-global/internal/repositories/storage"
 	"github.com/mohammadne/ice-global/internal/services"
-	"github.com/mohammadne/ice-global/internal/storage"
 	"github.com/mohammadne/ice-global/pkg/mysql"
 	"github.com/mohammadne/ice-global/pkg/redis"
 )
