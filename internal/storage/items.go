@@ -71,6 +71,10 @@ func (i *items) AllItems(ctx context.Context) (result []Item, err error) {
 }
 
 func (i *items) AllItemsByItemIds(ctx context.Context, ids []int) (result []Item, err error) {
+	if len(ids) == 0 {
+		return []Item{}, nil
+	}
+
 	query := `
 	SELECT id, name, price, created_at, updated_at
 	FROM items
