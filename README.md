@@ -7,9 +7,9 @@
 
 ## Introduction
 
-The `ICE Global` is a simple shopping cart manager for handling user cart iems.
+The `ICE Global` is a simple shopping cart manager for handling user cart iems and this Project was part of an [interview refactor](https://git.ice.global/packages/golang-interview-refactor) for the ICE Global.
 
-This Project was part of an [interview refactor](https://git.ice.global/packages/golang-interview-refactor) for the ICE Global.
+The application has been hosted on `https://ice-global.mohammadne.ir` 🚀
 
 ![Shopping cart manager](assets/application.png)
 
