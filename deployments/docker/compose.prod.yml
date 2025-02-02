@@ -41,14 +41,18 @@ services:
       - internal
 
   ice_global:
-    image: ghcr.io/mohammadne/ice-global:v0.0.3
+    image: ghcr.io/mohammadne/ice-global:v0.0.7
     restart: unless-stopped
     environment:
-      - ICE_GLOBAL_MYSQL_HOST="127.0.0.1"
-      - ICE_GLOBAL_MYSQL_PORT="3306"
-      - ICE_GLOBAL_MYSQL_USER="ice_user"
-      - ICE_GLOBAL_MYSQL_PASSWORD="9xz3jrd8wf"
-      - ICE_GLOBAL_MYSQL_DATABASE="ice_db"
+      - ICE_GLOBAL_MYSQL_HOST=mysql
+      - ICE_GLOBAL_MYSQL_PORT=3306
+      - ICE_GLOBAL_MYSQL_USER=ice_user
+      - ICE_GLOBAL_MYSQL_PASSWORD=9xz3jrd8wf
+      - ICE_GLOBAL_MYSQL_DATABASE=ice_db
+      - ICE_GLOBAL_REDIS_ADDRESS=redis:6379
+      - ICE_GLOBAL_REDIS_USERNAME=
+      - ICE_GLOBAL_REDIS_PASSWORD=
+      - ICE_GLOBAL_REDIS_DB=1
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ice_global.rule=Host(`ice-global.mohammadne.ir`)"
