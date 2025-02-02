@@ -10,7 +10,6 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/mohammadne/ice-global/pkg/mysql"
-	"github.com/mohammadne/ice-global/pkg/redis"
 )
 
 type Item struct {
@@ -26,13 +25,12 @@ type Items interface {
 	AllItemsByItemIds(ctx context.Context, ids []int) ([]Item, error)
 }
 
-func NewItems(mysql *mysql.Mysql, redis *redis.Redis) Items {
-	return &items{mysql: mysql, redis: redis}
+func NewItems(mysql *mysql.Mysql) Items {
+	return &items{mysql: mysql}
 }
 
 type items struct {
 	mysql *mysql.Mysql
-	redis *redis.Redis
 }
 
 var (

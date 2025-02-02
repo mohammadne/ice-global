@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/mohammadne/ice-global/internal/entities"
+	"github.com/mohammadne/ice-global/internal/repositories/cache"
 	"github.com/mohammadne/ice-global/internal/repositories/storage"
 )
 
@@ -12,11 +13,12 @@ type Items interface {
 	AllItems(ctx context.Context) ([]entities.Item, error)
 }
 
-func NewItems(itemsStorage storage.Items) Items {
-	return &items{itemsStorage: itemsStorage}
+func NewItems(itemsCache cache.Items, itemsStorage storage.Items) Items {
+	return &items{itemsCache: itemsCache, itemsStorage: itemsStorage}
 }
 
 type items struct {
+	itemsCache   cache.Items
 	itemsStorage storage.Items
 }
 

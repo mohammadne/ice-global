@@ -13,6 +13,7 @@ import (
 	"github.com/mohammadne/ice-global/cmd"
 	"github.com/mohammadne/ice-global/internal/api/http"
 	"github.com/mohammadne/ice-global/internal/config"
+	"github.com/mohammadne/ice-global/internal/repositories/cache"
 	"github.com/mohammadne/ice-global/internal/repositories/storage"
 	"github.com/mohammadne/ice-global/internal/services"
 	"github.com/mohammadne/ice-global/pkg/mysql"
@@ -43,14 +44,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	// cache
+	itemsCache := cache.NewItems(redis)
+
 	// storages
 	cartItemsStorage := storage.NewCartItems(mysql)
 	cartsStorage := storage.NewCarts(mysql)
-	itemsStorage := storage.NewItems(mysql, redis)
+	itemsStorage := storage.NewItems(mysql)
 
 	// services
 	cartsService := services.NewCarts(cartItemsStorage, cartsStorage, itemsStorage)
-	itemsService := services.NewItems(itemsStorage)
+	itemsService := services.NewItems(itemsCache, itemsStorage)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
