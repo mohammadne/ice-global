@@ -18,10 +18,10 @@ type Items interface {
 	AllItemIds(ctx context.Context) ([]int, error)
 
 	// GetItemsByIds
-	GetItemsByIds(ctx context.Context, ids []int) (map[int]entities.Item, error)
+	GetItemsByIds(ctx context.Context, ids []int) map[int]entities.Item
 
 	// SetItemsByIds
-	SetItemsByIds(ctx context.Context, items []entities.Item) error
+	SetItemsByIds(ctx context.Context, items []entities.Item)
 }
 
 func NewItems(redis *redis.Redis) Items {
@@ -40,20 +40,20 @@ var (
 // AllItemIds retrieves all item IDs from Redis.
 func (i *items) AllItemIds(ctx context.Context) ([]int, error) {
 	ids, err := i.redis.SMembers(ctx, idsKey).Result()
-	if err == redis.Nil {
+	if err == redis.Nil || len(ids) == 0 {
 		return []int{}, ErrorIdsNotFound
 	} else if err != nil {
 		return nil, fmt.Errorf("error retrieving item IDs from Redis: %v", err)
 	}
 
 	itemIds := make([]int, 0, len(ids))
-	for i, idString := range ids {
+	for _, idString := range ids {
 		id, err := strconv.Atoi(idString)
 		if err != nil {
 			slog.Error("error converting string to int for item Id", "Err", err)
 			continue
 		}
-		itemIds[i] = id
+		itemIds = append(itemIds, id)
 	}
 
 	return itemIds, nil
@@ -65,7 +65,7 @@ var (
 )
 
 // GetItemsByIds retrieves cached items from Redis by their IDs.
-func (c *items) GetItemsByIds(ctx context.Context, ids []int) (map[int]entities.Item, error) {
+func (c *items) GetItemsByIds(ctx context.Context, ids []int) map[int]entities.Item {
 	result := make(map[int]entities.Item, len(ids))
 
 	for _, id := range ids {
@@ -90,13 +90,13 @@ func (c *items) GetItemsByIds(ctx context.Context, ids []int) (map[int]entities.
 		result[id] = item
 	}
 
-	return result, nil
+	return result
 }
 
 var cacheTTL = 30 * time.Minute // Time to live for cached items
 
 // SetItemsByIds caches the given items in Redis by their ID.
-func (c *items) SetItemsByIds(ctx context.Context, items []entities.Item) error {
+func (c *items) SetItemsByIds(ctx context.Context, items []entities.Item) {
 	for _, item := range items {
 		cachedData, err := json.Marshal(item)
 		if err != nil {
@@ -119,6 +119,4 @@ func (c *items) SetItemsByIds(ctx context.Context, items []entities.Item) error 
 			continue
 		}
 	}
-
-	return nil
 }
