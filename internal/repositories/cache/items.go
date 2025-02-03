@@ -41,7 +41,7 @@ var (
 func (i *items) AllItemIds(ctx context.Context) ([]int, error) {
 	ids, err := i.redis.SMembers(ctx, idsKey).Result()
 	if errors.Is(err, redis.Nil) || len(ids) == 0 {
-		return []int{}, ErrorIdsNotFound
+		return nil, ErrorIdsNotFound
 	} else if err != nil {
 		return nil, fmt.Errorf("error retrieving item IDs from Redis: %v", err)
 	}

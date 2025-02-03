@@ -13,6 +13,9 @@ type MockItemsCache struct{ mock.Mock }
 
 func (m *MockItemsCache) AllItemIds(ctx context.Context) ([]int, error) {
 	args := m.Called(ctx)
+	if args.Get(0) == nil {
+		return nil, args.Error(1) // Return nil and the error
+	}
 	return args.Get(0).([]int), args.Error(1)
 }
 
@@ -29,6 +32,9 @@ type MockItemsStorage struct{ mock.Mock }
 
 func (m *MockItemsStorage) AllItems(ctx context.Context) ([]storage.Item, error) {
 	args := m.Called(ctx)
+	if args.Get(0) == nil {
+		return nil, args.Error(1) // Return nil and the error
+	}
 	return args.Get(0).([]storage.Item), args.Error(1)
 }
 
