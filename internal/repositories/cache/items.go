@@ -40,7 +40,7 @@ var (
 // AllItemIds retrieves all item IDs from Redis.
 func (i *items) AllItemIds(ctx context.Context) ([]int, error) {
 	ids, err := i.redis.SMembers(ctx, idsKey).Result()
-	if err == redis.Nil || len(ids) == 0 {
+	if errors.Is(err, redis.Nil) || len(ids) == 0 {
 		return []int{}, ErrorIdsNotFound
 	} else if err != nil {
 		return nil, fmt.Errorf("error retrieving item IDs from Redis: %v", err)
@@ -59,10 +59,7 @@ func (i *items) AllItemIds(ctx context.Context) ([]int, error) {
 	return itemIds, nil
 }
 
-var (
-	ErrorItemsNotFound = errors.New("no items have been found")
-	itemKeyPrefix      = "item:%d" // Key that stores item values
-)
+var itemKeyPrefix = "item:%d" // Key that stores item values
 
 // GetItemsByIds retrieves cached items from Redis by their IDs.
 func (c *items) GetItemsByIds(ctx context.Context, ids []int) map[int]entities.Item {
@@ -98,7 +95,7 @@ var cacheTTL = 30 * time.Minute // Time to live for cached items
 // SetItemsByIds caches the given items in Redis by their ID.
 func (c *items) SetItemsByIds(ctx context.Context, items []entities.Item) {
 	for _, item := range items {
-		cachedData, err := json.Marshal(item)
+		marshaledItem, err := json.Marshal(item)
 		if err != nil {
 			slog.Error("error marshalling item", slog.Int("id", item.Id), "Err", err)
 			continue
@@ -106,7 +103,7 @@ func (c *items) SetItemsByIds(ctx context.Context, items []entities.Item) {
 
 		// Set the item in Redis with TTL
 		cacheKey := fmt.Sprintf(itemKeyPrefix, item.Id)
-		err = c.redis.Set(ctx, cacheKey, cachedData, cacheTTL).Err()
+		err = c.redis.Set(ctx, cacheKey, marshaledItem, cacheTTL).Err()
 		if err != nil {
 			slog.Error("error caching item", slog.Int("id", item.Id), "Err", err)
 			continue
