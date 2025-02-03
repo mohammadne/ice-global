@@ -25,7 +25,7 @@ type CartItems interface {
 	AllCartItemsByCartId(ctx context.Context, cartId int) ([]CartItem, error)
 	RetrieveCartItemByCartIdAndItemId(ctx context.Context, cartId, itemId int) (*CartItem, error)
 	UpdateCartItem(ctx context.Context, cartItem *CartItem) error
-	DeleteCartItemById(ctx context.Context, id int) error
+	DeleteCartItemById(ctx context.Context, id int, deletedAt time.Time) error
 }
 
 func NewCartItems(mysql *mysql.Mysql) CartItems {
@@ -139,12 +139,12 @@ func (ci *cartItems) UpdateCartItem(ctx context.Context, cartItem *CartItem) err
 	return nil
 }
 
-func (ci *cartItems) DeleteCartItemById(ctx context.Context, id int) error {
+func (ci *cartItems) DeleteCartItemById(ctx context.Context, id int, deletedAt time.Time) error {
 	query := `
 	UPDATE cart_items SET deleted_at = ?
 	WHERE id = ?`
 
-	result, err := ci.database.ExecContext(ctx, query, time.Now(), id)
+	result, err := ci.database.ExecContext(ctx, query, deletedAt, id)
 	if err != nil {
 		return fmt.Errorf("error deleting cart-item from database: %v", err)
 	}

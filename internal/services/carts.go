@@ -200,7 +200,7 @@ func (c *carts) DeleteCartItem(ctx context.Context, cartId, cartItemId int) (err
 		return ErrorCartHasBeenClosed
 	}
 
-	err = c.cartItemsStorage.DeleteCartItemById(ctx, cartItemId)
+	err = c.cartItemsStorage.DeleteCartItemById(ctx, cartItemId, time.Now())
 	if err != nil {
 		return fmt.Errorf("error deleting cart-item: %v", err)
 	}
