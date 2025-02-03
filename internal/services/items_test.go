@@ -14,11 +14,11 @@ import (
 )
 
 func TestAllItems(t *testing.T) {
+	mockCache := new(MockItemsCache)
+	mockStorage := new(MockItemsStorage)
+	itemService := services.NewItems(mockCache, mockStorage)
 
 	t.Run("cache doesn't have item IDs, fetch all items from storage", func(t *testing.T) {
-		mockCache := new(MockItemsCache)
-		mockStorage := new(MockItemsStorage)
-		itemService := services.NewItems(mockCache, mockStorage)
 
 		// Given
 		storageItems := []storage.Item{
@@ -26,15 +26,9 @@ func TestAllItems(t *testing.T) {
 			{Id: 2, Name: "Item 2", Price: 200},
 		}
 
-		mockCache.On("AllItemIds", mock.Anything).Return(nil, cache.ErrorIdsNotFound)
-		mockStorage.On("AllItems", mock.Anything).Return(storageItems, nil)
-		mockCache.On("SetItemsByIds", mock.Anything, mock.Anything).Return()
-
-		// Cleanup
-		t.Cleanup(func() {
-			mockCache.AssertExpectations(t)
-			mockStorage.AssertExpectations(t)
-		})
+		mockCache.On("AllItemIds", mock.Anything).Return(nil, cache.ErrorIdsNotFound).Once()
+		mockStorage.On("AllItems", mock.Anything).Return(storageItems, nil).Once()
+		mockCache.On("SetItemsByIds", mock.Anything, mock.Anything).Return().Once()
 
 		// When
 		items, err := itemService.AllItems(context.TODO())
@@ -45,19 +39,9 @@ func TestAllItems(t *testing.T) {
 	})
 
 	t.Run("cache and storage both fail", func(t *testing.T) {
-		mockCache := new(MockItemsCache)
-		mockStorage := new(MockItemsStorage)
-		itemService := services.NewItems(mockCache, mockStorage)
-
 		// Given
-		mockCache.On("AllItemIds", mock.Anything).Return(nil, cache.ErrorIdsNotFound)
-		mockStorage.On("AllItems", mock.Anything).Return(nil, fmt.Errorf("storage error"))
-
-		// Cleanup
-		t.Cleanup(func() {
-			mockCache.AssertExpectations(t)
-			mockStorage.AssertExpectations(t)
-		})
+		mockCache.On("AllItemIds", mock.Anything).Return(nil, cache.ErrorIdsNotFound).Once()
+		mockStorage.On("AllItems", mock.Anything).Return(nil, fmt.Errorf("storage error")).Once()
 
 		// When
 		items, err := itemService.AllItems(context.TODO())
@@ -68,10 +52,6 @@ func TestAllItems(t *testing.T) {
 	})
 
 	t.Run("cache has item IDs, fetch missing items from storage", func(t *testing.T) {
-		mockCache := new(MockItemsCache)
-		mockStorage := new(MockItemsStorage)
-		itemService := services.NewItems(mockCache, mockStorage)
-
 		// Given
 		cacheIds := []int{1, 2, 3}
 		cachedItems := map[int]entities.Item{
@@ -82,16 +62,10 @@ func TestAllItems(t *testing.T) {
 			{Id: 3, Name: "Item 3", Price: 300},
 		}
 
-		mockCache.On("AllItemIds", mock.Anything).Return(cacheIds, nil)
-		mockCache.On("GetItemsByIds", mock.Anything, cacheIds).Return(cachedItems)
-		mockStorage.On("AllItemsByItemIds", mock.Anything, []int{3}).Return(storageItems, nil)
-		mockCache.On("SetItemsByIds", mock.Anything, mock.Anything).Return()
-
-		// Cleanup
-		t.Cleanup(func() {
-			mockCache.AssertExpectations(t)
-			mockStorage.AssertExpectations(t)
-		})
+		mockCache.On("AllItemIds", mock.Anything).Return(cacheIds, nil).Once()
+		mockCache.On("GetItemsByIds", mock.Anything, cacheIds).Return(cachedItems).Once()
+		mockStorage.On("AllItemsByItemIds", mock.Anything, []int{3}).Return(storageItems, nil).Once()
+		mockCache.On("SetItemsByIds", mock.Anything, mock.Anything).Return().Once()
 
 		// When
 		items, err := itemService.AllItems(context.TODO())

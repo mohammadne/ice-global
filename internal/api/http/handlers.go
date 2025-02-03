@@ -43,13 +43,6 @@ func (s *Server) showAddItemForm(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", data)
 }
 
-// -----------------------------------------------------
-
-type ItemForm struct {
-	ItemId   int    `form:"item_id"   binding:"required"`
-	Quantity string `form:"quantity"  binding:"required"`
-}
-
 func (s *Server) addItem(c *gin.Context) {
 	cartId, exists := c.Get(CartKey)
 	if !exists {
@@ -60,7 +53,11 @@ func (s *Server) addItem(c *gin.Context) {
 		return
 	}
 
-	addItemForm := &ItemForm{}
+	addItemForm := struct {
+		ItemId   int    `form:"item_id"   binding:"required"`
+		Quantity string `form:"quantity"  binding:"required"`
+	}{}
+
 	if err := binding.FormPost.Bind(c.Request, addItemForm); err != nil {
 		c.Redirect(302, "/?error="+err.Error())
 		return

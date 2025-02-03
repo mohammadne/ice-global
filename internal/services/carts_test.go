@@ -12,18 +12,19 @@ import (
 )
 
 func TestCartsService(t *testing.T) {
+	mockCartItemsStorage := new(MockCartItemsStorage)
+	mockCartsStorage := new(MockCartsStorage)
+	mockItemsStorage := new(MockItemsStorage)
+	service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
+
 	t.Run("RetrieveCartOptional - cart found", func(t *testing.T) {
-		mockCartItemsStorage := new(MockCartItemsStorage)
-		mockCartsStorage := new(MockCartsStorage)
-		mockItemsStorage := new(MockItemsStorage)
-		service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
 
 		mockCartsStorage.
 			On("RetrieveCartByCookieAndStatus", mock.Anything, "cookie", entities.CartStatusOpen).
 			Return(&storage.Cart{
 				Id:     1,
 				Cookie: "cookie",
-			}, nil)
+			}, nil).Once()
 
 		result, err := service.RetrieveCartOptional(context.TODO(), "cookie")
 		assert.NoError(t, err)
@@ -33,13 +34,8 @@ func TestCartsService(t *testing.T) {
 	})
 
 	t.Run("RetrieveCartOptional - cart not found", func(t *testing.T) {
-		mockCartItemsStorage := new(MockCartItemsStorage)
-		mockCartsStorage := new(MockCartsStorage)
-		mockItemsStorage := new(MockItemsStorage)
-		service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
-
 		mockCartsStorage.On("RetrieveCartByCookieAndStatus", mock.Anything, "cookie", entities.CartStatusOpen).
-			Return(nil, storage.ErrorCartNotFound)
+			Return(nil, storage.ErrorCartNotFound).Once()
 
 		result, err := service.RetrieveCartOptional(context.TODO(), "cookie")
 		assert.NoError(t, err)
@@ -48,16 +44,11 @@ func TestCartsService(t *testing.T) {
 	})
 
 	t.Run("RetrieveCartRequired - cart found", func(t *testing.T) {
-		mockCartItemsStorage := new(MockCartItemsStorage)
-		mockCartsStorage := new(MockCartsStorage)
-		mockItemsStorage := new(MockItemsStorage)
-		service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
-
 		mockCartsStorage.On("RetrieveCartByCookieAndStatus", mock.Anything, "cookie", entities.CartStatusOpen).
 			Return(&storage.Cart{
 				Id:     1,
 				Cookie: "cookie",
-			}, nil)
+			}, nil).Once()
 
 		result, err := service.RetrieveCartRequired(context.TODO(), "cookie")
 		assert.NoError(t, err)
@@ -67,14 +58,9 @@ func TestCartsService(t *testing.T) {
 	})
 
 	t.Run("RetrieveCartRequired - cart not found, create new cart", func(t *testing.T) {
-		mockCartItemsStorage := new(MockCartItemsStorage)
-		mockCartsStorage := new(MockCartsStorage)
-		mockItemsStorage := new(MockItemsStorage)
-		service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
-
 		mockCartsStorage.On("RetrieveCartByCookieAndStatus", mock.Anything, "cookie", entities.CartStatusOpen).
-			Return(nil, storage.ErrorCartNotFound)
-		mockCartsStorage.On("CreateCart", mock.Anything, mock.Anything).Return(1, nil)
+			Return(nil, storage.ErrorCartNotFound).Once()
+		mockCartsStorage.On("CreateCart", mock.Anything, mock.Anything).Return(1, nil).Once()
 
 		result, err := service.RetrieveCartRequired(context.TODO(), "cookie")
 		assert.NoError(t, err)
@@ -84,17 +70,12 @@ func TestCartsService(t *testing.T) {
 	})
 
 	t.Run("AllCartItemsByCartId - items found", func(t *testing.T) {
-		mockCartItemsStorage := new(MockCartItemsStorage)
-		mockCartsStorage := new(MockCartsStorage)
-		mockItemsStorage := new(MockItemsStorage)
-		service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
-
 		mockCartItemsStorage.On("AllCartItemsByCartId", mock.Anything, 1).Return([]storage.CartItem{
 			{Id: 1, CartId: 1, Quantity: 2, ItemId: 1},
-		}, nil)
+		}, nil).Once()
 		mockItemsStorage.On("AllItemsByItemIds", mock.Anything, []int{1}).Return([]storage.Item{
 			{Id: 1, Name: "Item 1", Price: 100},
-		}, nil)
+		}, nil).Once()
 
 		result, err := service.AllCartItemsByCartId(context.TODO(), 1)
 		assert.NoError(t, err)
@@ -104,14 +85,9 @@ func TestCartsService(t *testing.T) {
 	})
 
 	t.Run("AddItemToCart - new item", func(t *testing.T) {
-		mockCartItemsStorage := new(MockCartItemsStorage)
-		mockCartsStorage := new(MockCartsStorage)
-		mockItemsStorage := new(MockItemsStorage)
-		service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
-
 		mockCartItemsStorage.On("RetrieveCartItemByCartIdAndItemId", mock.Anything, 1, 1).
-			Return(&storage.CartItem{}, storage.ErrorCartItemNotFound)
-		mockCartItemsStorage.On("CreateCartItem", mock.Anything, mock.Anything).Return(1, nil)
+			Return(&storage.CartItem{}, storage.ErrorCartItemNotFound).Once()
+		mockCartItemsStorage.On("CreateCartItem", mock.Anything, mock.Anything).Return(1, nil).Once()
 
 		err := service.AddItemToCart(context.TODO(), 1, 1, 3)
 		assert.NoError(t, err)
@@ -119,14 +95,9 @@ func TestCartsService(t *testing.T) {
 	})
 
 	t.Run("AddItemToCart - item exists", func(t *testing.T) {
-		mockCartItemsStorage := new(MockCartItemsStorage)
-		mockCartsStorage := new(MockCartsStorage)
-		mockItemsStorage := new(MockItemsStorage)
-		service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
-
 		mockCartItemsStorage.On("RetrieveCartItemByCartIdAndItemId", mock.Anything, 1, 1).
-			Return(&storage.CartItem{Id: 1, Quantity: 1}, nil)
-		mockCartItemsStorage.On("UpdateCartItem", mock.Anything, mock.Anything).Return(nil)
+			Return(&storage.CartItem{Id: 1, Quantity: 1}, nil).Once()
+		mockCartItemsStorage.On("UpdateCartItem", mock.Anything, mock.Anything).Return(nil).Once()
 
 		err := service.AddItemToCart(context.TODO(), 1, 1, 3)
 		assert.NoError(t, err)
@@ -134,13 +105,8 @@ func TestCartsService(t *testing.T) {
 	})
 
 	t.Run("DeleteCartItem - cart closed", func(t *testing.T) {
-		mockCartItemsStorage := new(MockCartItemsStorage)
-		mockCartsStorage := new(MockCartsStorage)
-		mockItemsStorage := new(MockItemsStorage)
-		service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
-
 		mockCartsStorage.On("RetrieveCartById", mock.Anything, 1).
-			Return(&storage.Cart{Status: string(entities.CartStatusClosed)}, nil)
+			Return(&storage.Cart{Status: string(entities.CartStatusClosed)}, nil).Once()
 
 		err := service.DeleteCartItem(context.TODO(), 1, 1)
 		assert.Error(t, err)
@@ -149,14 +115,9 @@ func TestCartsService(t *testing.T) {
 	})
 
 	t.Run("DeleteCartItem - item deleted", func(t *testing.T) {
-		mockCartItemsStorage := new(MockCartItemsStorage)
-		mockCartsStorage := new(MockCartsStorage)
-		mockItemsStorage := new(MockItemsStorage)
-		service := services.NewCarts(mockCartItemsStorage, mockCartsStorage, mockItemsStorage)
-
 		mockCartsStorage.On("RetrieveCartById", mock.Anything, 1).
-			Return(&storage.Cart{Status: string(entities.CartStatusOpen)}, nil)
-		mockCartItemsStorage.On("DeleteCartItemById", mock.Anything, 1, mock.Anything).Return(nil)
+			Return(&storage.Cart{Status: string(entities.CartStatusOpen)}, nil).Once()
+		mockCartItemsStorage.On("DeleteCartItemById", mock.Anything, 1, mock.Anything).Return(nil).Once()
 
 		err := service.DeleteCartItem(context.TODO(), 1, 1)
 		assert.NoError(t, err)
