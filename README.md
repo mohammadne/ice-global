@@ -128,3 +128,7 @@ Several issues in the original schema required migration:
 3. The `session_id` column should be unique across all related tables.
 4. The `total` column in `cart_entities` made the table denormalized; this information can be derived from other related tables.
 5. Using `TIMESTAMP` instead of `DATETIME` offers better tracking of changes over time.
+
+### Tests
+
+I have written unit tests for different modules, for mocking redis I have used `miniredis` and for sql database I have used the package `sqlmock`, also for mocking api calls to this repositories I have used the `testify` package to mock the behavior of this repositories.
