@@ -19,7 +19,7 @@ func (s *Server) OptionalCookie(c *gin.Context) {
 	cookie, err := c.Request.Cookie(CookieName)
 	if errors.Is(err, http.ErrNoCookie) {
 		cookieValue := strconv.FormatInt(time.Now().UnixNano(), 10)
-		c.SetCookie(CookieName, cookieValue, 3600, "/", "localhost", false, true)
+		c.SetCookie(CookieName, cookieValue, 3600, "/", "", false, true)
 	} else {
 		// find the cart and if exists, put the cart-id
 		cart, err := s.cartsService.RetrieveCartOptional(c.Request.Context(), cookie.Value)

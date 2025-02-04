@@ -41,7 +41,7 @@ services:
       - internal
 
   ice_global:
-    image: ghcr.io/mohammadne/ice-global:v0.0.7
+    image: ghcr.io/mohammadne/ice-global:v0.0.9
     restart: unless-stopped
     command:
       - --environment=prod

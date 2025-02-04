@@ -58,7 +58,7 @@ func (s *Server) addItem(c *gin.Context) {
 		Quantity string `form:"quantity"  binding:"required"`
 	}{}
 
-	if err := binding.FormPost.Bind(c.Request, addItemForm); err != nil {
+	if err := binding.FormPost.Bind(c.Request, &addItemForm); err != nil {
 		c.Redirect(302, "/?error="+err.Error())
 		return
 	}
