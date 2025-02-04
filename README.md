@@ -132,3 +132,7 @@ Several issues in the original schema required migration:
 ### Tests
 
 I have written unit tests for different modules, for mocking redis I have used `miniredis` and for sql database I have used the package `sqlmock`, also for mocking api calls to this repositories I have used the `testify` package to mock the behavior of this repositories.
+
+### Linting
+
+I have used the `golangci lint` and in the test workflow of the github action I have a trigger for the lint part.
