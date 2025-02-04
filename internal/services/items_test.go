@@ -75,3 +75,29 @@ func TestAllItems(t *testing.T) {
 		assert.Len(t, items, 3)
 	})
 }
+
+func BenchmarkAllItems(b *testing.B) {
+	ctx := context.Background()
+
+	mockCache := new(MockItemsCache)
+	mockStorage := new(MockItemsStorage)
+
+	// Mock behavior for cache miss
+	mockCache.On("AllItemIds", ctx).Return([]int{}, cache.ErrorIdsNotFound)
+	mockStorage.On("AllItems", ctx).Return([]storage.Item{
+		{Id: 1, Name: "Item1", Price: 100},
+		{Id: 2, Name: "Item2", Price: 200},
+	}, nil)
+	mockCache.On("SetItemsByIds", ctx, mock.Anything).Return()
+
+	service := services.NewItems(mockCache, mockStorage)
+
+	// Run the benchmark
+	for i := 0; i < b.N; i++ {
+		_, _ = service.AllItems(ctx)
+	}
+
+	// Verify expectations
+	mockCache.AssertExpectations(b)
+	mockStorage.AssertExpectations(b)
+}

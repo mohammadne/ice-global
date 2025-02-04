@@ -133,6 +133,17 @@ Several issues in the original schema required migration:
 
 I have written unit tests for different modules, for mocking redis I have used `miniredis` and for sql database I have used the package `sqlmock`, also for mocking api calls to this repositories I have used the `testify` package to mock the behavior of this repositories.
 
+For the service layer and the item's service I have added some `benchmark` tests to measure the performance altough this method uses the mocks and mocks do not represent real performance.
+
+I have also added `k6` for the `load` testing.
+
+So In my project, I have the following tests:
+
+- unit tests
+- benchmark tests
+- load test
+- integration tests
+
 ### Linting
 
 I have used the `golangci lint` and in the test workflow of the github action I have a trigger for the lint part.

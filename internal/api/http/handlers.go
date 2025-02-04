@@ -79,8 +79,6 @@ func (s *Server) addItem(c *gin.Context) {
 	c.Redirect(302, "/")
 }
 
-// -----------------------------------------------------
-
 func (s *Server) deleteCartItem(c *gin.Context) {
 	cartId, exists := c.Get(CartKey)
 	if !exists {
