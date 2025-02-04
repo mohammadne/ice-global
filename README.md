@@ -131,11 +131,11 @@ Several issues in the original schema required migration:
 
 ### Tests
 
-I have written unit tests for different modules, for mocking redis I have used `miniredis` and for sql database I have used the package `sqlmock`, also for mocking api calls to this repositories I have used the `testify` package to mock the behavior of this repositories.
+I have written unit tests for different modules, for mocking redis I have used `miniredis` and for mysql database I have used the package `sqlmock`, also for mocking api calls to this repositories I have used the `testify` package to mock the behavior of this repositories.
 
-For the service layer and the item's service I have added some `benchmark` tests to measure the performance altough this method uses the mocks and mocks do not represent real performance.
+For the service layer and the item's service I have added some sample `benchmark` tests to measure the performance, altough this method uses the mocks and mocks do not represent real performance.
 
-There is a functional test and integration test in the tests directory which are very basic tests which the envirionemnt has been spinned up by docker-compose (the one in deployments/docker/compose.local.yml) and in the functional part we test the cache behavior and in the integration tests we test the behavior of the whole application (set cookie and send the request to the applicaion, for more advanced integration tests we can examine the expectations like the value of items in redis and mysql by an actual redis and mysql driver and assert if something goes wrong).
+There is a functional test and an integration test in the tests directory which are very basic test cases spinned up by docker-compose (the one in deployments/docker/compose.local.yml). in the functional part we test the cache module and in the integration test we test the behavior of the whole application (set cookie and send the request to the applicaion, for more advanced integration tests we can examine the expectations like the value of items in redis and mysql by an actual redis and mysql driver and assert if something goes wrong).
 
 I have also added `k6` for the `load` testing.
 
