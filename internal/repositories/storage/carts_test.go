@@ -67,7 +67,7 @@ func TestRetrieveCartById(t *testing.T) {
 
 	t.Run("with_result", func(t *testing.T) {
 		storageCart := storage.Cart{
-			Id:        12,
+			ID:        12,
 			Cookie:    "sample-cookie-timestamp",
 			Status:    "open",
 			CreatedAt: time.Now(),
@@ -77,7 +77,7 @@ func TestRetrieveCartById(t *testing.T) {
 			ExpectQuery(regexp.QuoteMeta(("SELECT id, session_id, status, created_at, deleted_at FROM cart_entities	WHERE id = ?"))).
 			WithArgs(itemId).
 			WillReturnRows(sqlmock.NewRows(cartColumns).
-				AddRow(storageCart.Id, storageCart.Cookie, storageCart.Status, storageCart.CreatedAt, nil))
+				AddRow(storageCart.ID, storageCart.Cookie, storageCart.Status, storageCart.CreatedAt, nil))
 
 		cart, err := cartsStorage.RetrieveCartById(context.TODO(), itemId)
 		if err != nil {
@@ -86,7 +86,7 @@ func TestRetrieveCartById(t *testing.T) {
 
 		if cart == nil {
 			t.Error("expecting result but cart is empty")
-		} else if cart.Id != storageCart.Id {
+		} else if cart.ID != storageCart.ID {
 			t.Error("invalid cart-id has been returned")
 		}
 
@@ -118,7 +118,7 @@ func TestRetrieveCartByCookieAndStatus(t *testing.T) {
 
 	t.Run("with_result", func(t *testing.T) {
 		storageCart := storage.Cart{
-			Id:        12,
+			ID:        12,
 			Cookie:    cookie,
 			Status:    string(status),
 			CreatedAt: time.Now(),
@@ -128,7 +128,7 @@ func TestRetrieveCartByCookieAndStatus(t *testing.T) {
 			ExpectQuery(regexp.QuoteMeta(("SELECT id, session_id, status, created_at, deleted_at FROM cart_entities WHERE session_id = ? AND status = ?"))).
 			WithArgs(cookie, status).
 			WillReturnRows(sqlmock.NewRows(cartColumns).
-				AddRow(storageCart.Id, storageCart.Cookie, storageCart.Status, storageCart.CreatedAt, nil))
+				AddRow(storageCart.ID, storageCart.Cookie, storageCart.Status, storageCart.CreatedAt, nil))
 
 		cart, err := cartsStorage.RetrieveCartByCookieAndStatus(context.TODO(), cookie, status)
 		if err != nil {
@@ -137,7 +137,7 @@ func TestRetrieveCartByCookieAndStatus(t *testing.T) {
 
 		if cart == nil {
 			t.Error("expecting result but cart is empty")
-		} else if cart.Id != storageCart.Id {
+		} else if cart.ID != storageCart.ID {
 			t.Error("invalid cart-id has been returned")
 		}
 

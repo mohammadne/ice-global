@@ -12,7 +12,7 @@ import (
 )
 
 type Cart struct {
-	Id        int
+	ID        int
 	Cookie    string
 	Status    string
 	CreatedAt time.Time
@@ -67,7 +67,7 @@ func (c *carts) RetrieveCartById(ctx context.Context, id int) (result *Cart, err
 
 	result = &Cart{}
 	err = c.database.QueryRowContext(ctx, query, id).Scan(
-		&result.Id, &result.Cookie, &result.Status, &result.CreatedAt, &result.DeletedAt)
+		&result.ID, &result.Cookie, &result.Status, &result.CreatedAt, &result.DeletedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrorCartNotFound
@@ -87,7 +87,7 @@ func (c *carts) RetrieveCartByCookieAndStatus(ctx context.Context, cookie string
 
 	result = &Cart{}
 	err = c.database.QueryRowContext(ctx, query, cookie, status).Scan(
-		&result.Id, &result.Cookie, &result.Status, &result.CreatedAt, &result.DeletedAt)
+		&result.ID, &result.Cookie, &result.Status, &result.CreatedAt, &result.DeletedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrorCartNotFound

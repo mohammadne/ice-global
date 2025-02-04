@@ -32,7 +32,7 @@ func TestAllItems(t *testing.T) {
 
 	if len(items) != 2 {
 		t.Error("invalid items length result")
-	} else if items[0].Id != 1 {
+	} else if items[0].ID != 1 {
 		t.Error("invalid item-id has been returned")
 	}
 
@@ -80,7 +80,7 @@ func TestAllItemsByItemIds(t *testing.T) {
 
 		if len(items) != len(itemIds) {
 			t.Error("invalid items length result")
-		} else if items[0].Id != 1 {
+		} else if items[0].ID != 1 {
 			t.Error("invalid item-id has been returned")
 		}
 

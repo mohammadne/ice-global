@@ -13,7 +13,7 @@ import (
 )
 
 type Item struct {
-	Id        int
+	ID        int
 	Name      string
 	Price     int
 	CreatedAt time.Time
@@ -54,7 +54,7 @@ func (i *items) AllItems(ctx context.Context) (result []Item, err error) {
 	result = make([]Item, 0)
 	for rows.Next() {
 		item := Item{}
-		err = rows.Scan(&item.Id, &item.Name, &item.Price, &item.CreatedAt, &item.UpdatedAt)
+		err = rows.Scan(&item.ID, &item.Name, &item.Price, &item.CreatedAt, &item.UpdatedAt)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning item result row: %v", err)
 		}
@@ -96,7 +96,7 @@ func (i *items) AllItemsByItemIds(ctx context.Context, ids []int) (result []Item
 	result = make([]Item, 0)
 	for rows.Next() {
 		item := Item{}
-		err = rows.Scan(&item.Id, &item.Name, &item.Price, &item.CreatedAt, &item.UpdatedAt)
+		err = rows.Scan(&item.ID, &item.Name, &item.Price, &item.CreatedAt, &item.UpdatedAt)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning item result row: %v", err)
 		}

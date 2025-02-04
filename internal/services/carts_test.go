@@ -22,7 +22,7 @@ func TestCartsService(t *testing.T) {
 		mockCartsStorage.
 			On("RetrieveCartByCookieAndStatus", mock.Anything, "cookie", entities.CartStatusOpen).
 			Return(&storage.Cart{
-				Id:     1,
+				ID:     1,
 				Cookie: "cookie",
 			}, nil).Once()
 
@@ -46,7 +46,7 @@ func TestCartsService(t *testing.T) {
 	t.Run("RetrieveCartRequired - cart found", func(t *testing.T) {
 		mockCartsStorage.On("RetrieveCartByCookieAndStatus", mock.Anything, "cookie", entities.CartStatusOpen).
 			Return(&storage.Cart{
-				Id:     1,
+				ID:     1,
 				Cookie: "cookie",
 			}, nil).Once()
 
@@ -71,10 +71,10 @@ func TestCartsService(t *testing.T) {
 
 	t.Run("AllCartItemsByCartId - items found", func(t *testing.T) {
 		mockCartItemsStorage.On("AllCartItemsByCartId", mock.Anything, 1).Return([]storage.CartItem{
-			{Id: 1, CartId: 1, Quantity: 2, ItemId: 1},
+			{ID: 1, CartID: 1, Quantity: 2, ItemID: 1},
 		}, nil).Once()
 		mockItemsStorage.On("AllItemsByItemIds", mock.Anything, []int{1}).Return([]storage.Item{
-			{Id: 1, Name: "Item 1", Price: 100},
+			{ID: 1, Name: "Item 1", Price: 100},
 		}, nil).Once()
 
 		result, err := service.AllCartItemsByCartId(context.TODO(), 1)
@@ -96,7 +96,7 @@ func TestCartsService(t *testing.T) {
 
 	t.Run("AddItemToCart - item exists", func(t *testing.T) {
 		mockCartItemsStorage.On("RetrieveCartItemByCartIdAndItemId", mock.Anything, 1, 1).
-			Return(&storage.CartItem{Id: 1, Quantity: 1}, nil).Once()
+			Return(&storage.CartItem{ID: 1, Quantity: 1}, nil).Once()
 		mockCartItemsStorage.On("UpdateCartItem", mock.Anything, mock.Anything).Return(nil).Once()
 
 		err := service.AddItemToCart(context.TODO(), 1, 1, 3)

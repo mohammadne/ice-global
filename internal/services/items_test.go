@@ -22,8 +22,8 @@ func TestAllItems(t *testing.T) {
 
 		// Given
 		storageItems := []storage.Item{
-			{Id: 1, Name: "Item 1", Price: 100},
-			{Id: 2, Name: "Item 2", Price: 200},
+			{ID: 1, Name: "Item 1", Price: 100},
+			{ID: 2, Name: "Item 2", Price: 200},
 		}
 
 		mockCache.On("AllItemIds", mock.Anything).Return(nil, cache.ErrorIdsNotFound).Once()
@@ -59,7 +59,7 @@ func TestAllItems(t *testing.T) {
 			2: {Id: 2, Name: "Item 2", Price: 200},
 		}
 		storageItems := []storage.Item{
-			{Id: 3, Name: "Item 3", Price: 300},
+			{ID: 3, Name: "Item 3", Price: 300},
 		}
 
 		mockCache.On("AllItemIds", mock.Anything).Return(cacheIds, nil).Once()
@@ -85,8 +85,8 @@ func BenchmarkAllItems(b *testing.B) {
 	// Mock behavior for cache miss
 	mockCache.On("AllItemIds", ctx).Return([]int{}, cache.ErrorIdsNotFound)
 	mockStorage.On("AllItems", ctx).Return([]storage.Item{
-		{Id: 1, Name: "Item1", Price: 100},
-		{Id: 2, Name: "Item2", Price: 200},
+		{ID: 1, Name: "Item1", Price: 100},
+		{ID: 2, Name: "Item2", Price: 200},
 	}, nil)
 	mockCache.On("SetItemsByIds", ctx, mock.Anything).Return()
 

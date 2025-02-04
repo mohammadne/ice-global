@@ -11,9 +11,9 @@ import (
 )
 
 type CartItem struct {
-	Id        int
-	CartId    int
-	ItemId    int
+	ID        int
+	CartID    int
+	ItemID    int
 	Quantity  int
 	CreatedAt time.Time
 	UpdatedAt sql.NullTime
@@ -48,7 +48,7 @@ func (ci *cartItems) CreateCartItem(ctx context.Context, cartItem *CartItem) (id
 	VALUES (?, ?, ?, ?)`
 
 	result, err := ci.database.ExecContext(ctx, query,
-		cartItem.CartId, cartItem.ItemId, cartItem.Quantity, cartItem.CreatedAt,
+		cartItem.CartID, cartItem.ItemID, cartItem.Quantity, cartItem.CreatedAt,
 	)
 	if err != nil {
 		return -1, fmt.Errorf("error insert cart-item into database: %v", err)
@@ -80,7 +80,7 @@ func (ci *cartItems) AllCartItemsByCartId(ctx context.Context, cartId int) (resu
 	result = make([]CartItem, 0)
 	for rows.Next() {
 		item := CartItem{}
-		err = rows.Scan(&item.Id, &item.CartId, &item.ItemId, &item.Quantity,
+		err = rows.Scan(&item.ID, &item.CartID, &item.ItemID, &item.Quantity,
 			&item.CreatedAt, &item.UpdatedAt, &item.DeletedAt)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning cart-item result row: %v", err)
@@ -103,7 +103,7 @@ func (ci *cartItems) RetrieveCartItemByCartIdAndItemId(ctx context.Context, cart
 
 	result = &CartItem{}
 	err = ci.database.QueryRowContext(ctx, query, cartId, itemId).Scan(
-		&result.Id, &result.CartId, &result.ItemId, &result.Quantity, &result.CreatedAt, &result.UpdatedAt, &result.DeletedAt)
+		&result.ID, &result.CartID, &result.ItemID, &result.Quantity, &result.CreatedAt, &result.UpdatedAt, &result.DeletedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrorCartItemNotFound
@@ -124,7 +124,7 @@ func (ci *cartItems) UpdateCartItem(ctx context.Context, cartItem *CartItem) err
 	WHERE id = ?`
 
 	result, err := ci.database.ExecContext(ctx, query,
-		cartItem.CartId, cartItem.ItemId, cartItem.Quantity, cartItem.UpdatedAt, cartItem.Id,
+		cartItem.CartID, cartItem.ItemID, cartItem.Quantity, cartItem.UpdatedAt, cartItem.ID,
 	)
 	if err != nil {
 		return fmt.Errorf("error update cart-item into database: %v", err)

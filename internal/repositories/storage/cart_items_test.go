@@ -24,15 +24,15 @@ var cartItemColumns = []string{
 
 func TestCreateCartItem(t *testing.T) {
 	storageCartItem := storage.CartItem{
-		CartId:    1,
-		ItemId:    1,
+		CartID:    1,
+		ItemID:    1,
 		Quantity:  2,
 		CreatedAt: time.Now(),
 	}
 
 	mockDB.
 		ExpectExec(regexp.QuoteMeta("INSERT INTO cart_items (cart_id, item_id, quantity, created_at) VALUES (?, ?, ?, ?)")).
-		WithArgs(storageCartItem.CartId, storageCartItem.ItemId, storageCartItem.Quantity, storageCartItem.CreatedAt).
+		WithArgs(storageCartItem.CartID, storageCartItem.ItemID, storageCartItem.Quantity, storageCartItem.CreatedAt).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	id, err := cartItemStorage.CreateCartItem(context.TODO(), &storageCartItem)
@@ -88,7 +88,7 @@ func TestAllCartItemsByCartId(t *testing.T) {
 
 		if len(cartItems) != len(cartItemIds) {
 			t.Error("invalid items length result")
-		} else if cartItems[0].Id != 1 {
+		} else if cartItems[0].ID != 1 {
 			t.Error("invalid item-id has been returned")
 		}
 
@@ -120,9 +120,9 @@ func TestRetrieveCartItemByCartIdAndItemId(t *testing.T) {
 
 	t.Run("with_result", func(t *testing.T) {
 		storageCartItem := storage.CartItem{
-			Id:        12,
-			CartId:    cartId,
-			ItemId:    itemId,
+			ID:        12,
+			CartID:    cartId,
+			ItemID:    itemId,
 			Quantity:  3,
 			CreatedAt: time.Now(),
 		}
@@ -131,7 +131,7 @@ func TestRetrieveCartItemByCartIdAndItemId(t *testing.T) {
 			ExpectQuery(regexp.QuoteMeta("SELECT id, cart_id, item_id, quantity, created_at, updated_at, deleted_at FROM cart_items WHERE cart_id = ? AND item_id = ?")).
 			WithArgs(cartId, itemId).
 			WillReturnRows(sqlmock.NewRows(cartItemColumns).
-				AddRow(storageCartItem.Id, storageCartItem.CartId, storageCartItem.ItemId, storageCartItem.Quantity, storageCartItem.CreatedAt, nil, nil))
+				AddRow(storageCartItem.ID, storageCartItem.CartID, storageCartItem.ItemID, storageCartItem.Quantity, storageCartItem.CreatedAt, nil, nil))
 
 		cartItem, err := cartItemStorage.RetrieveCartItemByCartIdAndItemId(context.TODO(), cartId, itemId)
 		if err != nil {
@@ -140,7 +140,7 @@ func TestRetrieveCartItemByCartIdAndItemId(t *testing.T) {
 
 		if cartItem == nil {
 			t.Error("expecting result but cart is empty")
-		} else if cartItem.Id != storageCartItem.Id {
+		} else if cartItem.ID != storageCartItem.ID {
 			t.Error("invalid cart-id has been returned")
 		}
 
@@ -152,16 +152,16 @@ func TestRetrieveCartItemByCartIdAndItemId(t *testing.T) {
 
 func TestUpdateCartItem(t *testing.T) {
 	storageCartItem := storage.CartItem{
-		Id:        1,
-		CartId:    1,
-		ItemId:    1,
+		ID:        1,
+		CartID:    1,
+		ItemID:    1,
 		Quantity:  2,
 		UpdatedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	}
 
 	mockDB.
 		ExpectExec(regexp.QuoteMeta("UPDATE cart_items SET cart_id = ?, item_id = ?, quantity = ?, updated_at = ? WHERE id = ?")).
-		WithArgs(storageCartItem.CartId, storageCartItem.ItemId, storageCartItem.Quantity, storageCartItem.UpdatedAt, storageCartItem.Id).
+		WithArgs(storageCartItem.CartID, storageCartItem.ItemID, storageCartItem.Quantity, storageCartItem.UpdatedAt, storageCartItem.ID).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err := cartItemStorage.UpdateCartItem(context.TODO(), &storageCartItem)

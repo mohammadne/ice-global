@@ -35,7 +35,7 @@ func (i *items) AllItems(ctx context.Context) (result []entities.Item, err error
 			result = make([]entities.Item, 0, len(storageItems))
 			for _, storageItem := range storageItems {
 				result = append(result, entities.Item{
-					Id:    storageItem.Id,
+					Id:    storageItem.ID,
 					Name:  storageItem.Name,
 					Price: storageItem.Price,
 				})
@@ -69,7 +69,7 @@ func (i *items) AllItems(ctx context.Context) (result []entities.Item, err error
 		result = make([]entities.Item, 0, len(ids))
 		for _, storageItem := range storageItems {
 			result = append(result, entities.Item{
-				Id:    storageItem.Id,
+				Id:    storageItem.ID,
 				Name:  storageItem.Name,
 				Price: storageItem.Price,
 			})

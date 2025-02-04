@@ -8,7 +8,7 @@
 
 ## Introduction
 
-`ICE Global` is a simple shopping cart manager that allows users to manage cart items. This project was part of an [interview refactor](https://git.ice.global/packages/golang-interview-refactor) for ICE Global.
+`ICE Global` is a simple and scalable shopping cart manager that allows users to manage cart items. This project is developed with me as part of an [interview refactor](https://git.ice.global/packages/golang-interview-refactor) for ICE Global.
 
 The application is live at [https://ice-global.mohammadne.ir](https://ice-global.mohammadne.ir) 🚀
 
@@ -135,6 +135,8 @@ I have written unit tests for different modules, for mocking redis I have used `
 
 For the service layer and the item's service I have added some `benchmark` tests to measure the performance altough this method uses the mocks and mocks do not represent real performance.
 
+There is a functional test and integration test in the tests directory which are very basic tests which the envirionemnt has been spinned up by docker-compose (the one in deployments/docker/compose.local.yml) and in the functional part we test the cache behavior and in the integration tests we test the behavior of the whole application (set cookie and send the request to the applicaion, for more advanced integration tests we can examine the expectations like the value of items in redis and mysql by an actual redis and mysql driver and assert if something goes wrong).
+
 I have also added `k6` for the `load` testing.
 
 So In my project, I have the following tests:
@@ -143,7 +145,4 @@ So In my project, I have the following tests:
 - benchmark tests
 - load test
 - integration tests
-
-### Linting
-
-I have used the `golangci lint` and in the test workflow of the github action I have a trigger for the lint part.
+- functional tests

@@ -45,7 +45,7 @@ func (u *carts) RetrieveCartOptional(ctx context.Context, cookie string) (result
 	}
 
 	return &entities.Cart{
-		Id:     storageUser.Id,
+		Id:     storageUser.ID,
 		Cookie: storageUser.Cookie,
 	}, nil
 }
@@ -80,7 +80,7 @@ func (u *carts) RetrieveCartRequired(ctx context.Context, cookie string) (result
 	}
 
 	return &entities.Cart{
-		Id:     storageCart.Id,
+		Id:     storageCart.ID,
 		Cookie: storageCart.Cookie,
 		Status: entities.CartStatus(storageCart.Status),
 	}, nil
@@ -99,7 +99,7 @@ func (c *carts) AllCartItemsByCartId(ctx context.Context, cartId int) ([]entitie
 
 	itemIds := make([]int, 0, len(storageCartItems))
 	for _, storageCartItem := range storageCartItems {
-		itemIds = append(itemIds, storageCartItem.ItemId)
+		itemIds = append(itemIds, storageCartItem.ItemID)
 	}
 
 	storageItems, err := c.itemsStorage.AllItemsByItemIds(ctx, itemIds)
@@ -119,7 +119,7 @@ func (c *carts) AllCartItemsByCartId(ctx context.Context, cartId int) ([]entitie
 		}
 
 		cartItem := entities.CartItem{
-			Id:        storageCartItem.Id,
+			Id:        storageCartItem.ID,
 			Cart:      &entities.Cart{},
 			Quantity:  storageCartItem.Quantity,
 			IsDeleted: storageCartItem.DeletedAt.Valid,
@@ -127,9 +127,9 @@ func (c *carts) AllCartItemsByCartId(ctx context.Context, cartId int) ([]entitie
 
 		var item *entities.Item
 		for _, storageItem := range storageItems {
-			if storageCartItem.ItemId == storageItem.Id {
+			if storageCartItem.ItemID == storageItem.ID {
 				item = &entities.Item{
-					Id:    storageItem.Id,
+					Id:    storageItem.ID,
 					Name:  storageItem.Name,
 					Price: storageItem.Price,
 				}
@@ -148,8 +148,8 @@ func (c *carts) AddItemToCart(ctx context.Context, cartId, itemId, quantity int)
 	if err != nil {
 		if err == storage.ErrorCartItemNotFound {
 			storageCartItem := storage.CartItem{
-				CartId:    cartId,
-				ItemId:    itemId,
+				CartID:    cartId,
+				ItemID:    itemId,
 				Quantity:  quantity,
 				CreatedAt: time.Now(),
 			}
@@ -166,8 +166,8 @@ func (c *carts) AddItemToCart(ctx context.Context, cartId, itemId, quantity int)
 
 	if storageCartItem.DeletedAt.Valid {
 		storageCartItem := storage.CartItem{
-			CartId:    cartId,
-			ItemId:    itemId,
+			CartID:    cartId,
+			ItemID:    itemId,
 			Quantity:  quantity,
 			CreatedAt: time.Now(),
 		}
