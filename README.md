@@ -1,9 +1,9 @@
 # Shopping Cart Manager
 
 ![Go Version](https://img.shields.io/badge/Golang-1.23-66ADD8?style=for-the-badge&logo=go)
-![App Version](https://img.shields.io/github/v/tag/mohammadne/ice-global?sort=semver&style=for-the-badge&logo=github)
-![Coverage](https://img.shields.io/codecov/c/github/mohammadne/ice-global?logo=codecov&style=for-the-badge)
-![Repo Size](https://img.shields.io/github/repo-size/mohammadne/ice-global?logo=github&style=for-the-badge)
+![App Version](https://img.shields.io/github/v/tag/mohammadne/shopping-cart-manager?sort=semver&style=for-the-badge&logo=github)
+![Coverage](https://img.shields.io/codecov/c/github/mohammadne/shopping-cart-manager?logo=codecov&style=for-the-badge)
+![Repo Size](https://img.shields.io/github/repo-size/mohammadne/shopping-cart-manager?logo=github&style=for-the-badge)
 
 ## Introduction
 
