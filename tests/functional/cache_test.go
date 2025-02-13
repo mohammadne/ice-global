@@ -10,9 +10,9 @@ import (
 	// "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mohammadne/ice-global/internal/entities"
-	"github.com/mohammadne/ice-global/internal/repositories/cache"
-	"github.com/mohammadne/ice-global/pkg/redis"
+	"github.com/mohammadne/shopping-cart-manager/internal/entities"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/cache"
+	"github.com/mohammadne/shopping-cart-manager/pkg/redis"
 )
 
 var itemCache cache.Items
