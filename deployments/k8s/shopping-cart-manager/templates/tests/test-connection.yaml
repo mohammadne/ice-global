@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "shopping-cart-manager.fullname" . }}-test-connection"
+  labels:
+    {{- include "shopping-cart-manager.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "shopping-cart-manager.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

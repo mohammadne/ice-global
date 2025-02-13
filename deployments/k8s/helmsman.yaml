@@ -1,10 +1,10 @@
 settings:
-  kubeContext: kind-ice-global
+  kubeContext: kind-shopping-cart-manager
   maxHistory: 10
   timeout: 6000
 
 namespaces:
-  ice-global:
+  shopping-cart-manager:
     labels:
       managed-by: helmsman
 
@@ -12,17 +12,17 @@ helmRepos:
   bitnami: https://charts.bitnami.com/bitnami
 
 apps:
-  ice-global:
+  shopping-cart-manager:
     enabled: true
-    namespace: ice-global
-    chart: "./ice-global"
+    namespace: shopping-cart-manager
+    chart: "./shopping-cart-manager"
     version: "0.1.0"
     secretsFiles:
-      - ./ice-global/secrets.yaml
+      - ./shopping-cart-manager/secrets.yaml
 
   mysql:
     enabled: true
-    namespace: ice-global
+    namespace: shopping-cart-manager
     chart: bitnami/mysql
     version: "9.1.0"
     valuesFile: ./mysql/values.yaml
@@ -35,7 +35,7 @@ apps:
     chart: bitnami/redis
     version: "17.1.0"
     valuesFile: ./redis/values.yaml
-    namespace: ice-global
+    namespace: shopping-cart-manager
     wait: true
     secretsFiles:
       - ./redis/secrets.yaml

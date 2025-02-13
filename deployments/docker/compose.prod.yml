@@ -40,8 +40,8 @@ services:
     networks:
       - internal
 
-  ice_global:
-    image: ghcr.io/mohammadne/ice-global:v0.0.9
+  shopping_cart_manager:
+    image: ghcr.io/mohammadne/shopping-cart-manager:v0.0.11
     restart: unless-stopped
     command:
       - --environment=prod
@@ -57,7 +57,7 @@ services:
       - ICE_GLOBAL_REDIS_DB=1
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ice_global.rule=Host(`ice-global.mohammadne.ir`)"
+      - "traefik.http.routers.ice_global.rule=Host(`shopping-cart-manager.mohammadne.ir`)"
       - "traefik.http.routers.ice_global.entrypoints=websecure"
       - "traefik.http.routers.ice_global.tls.certresolver=myresolver"
       - "traefik.http.services.ice_global.loadbalancer.server.port=8088"

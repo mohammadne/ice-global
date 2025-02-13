@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "ice-global.name" -}}
+{{- define "shopping-cart-manager.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "ice-global.fullname" -}}
+{{- define "shopping-cart-manager.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "ice-global.chart" -}}
+{{- define "shopping-cart-manager.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "ice-global.labels" -}}
-helm.sh/chart: {{ include "ice-global.chart" . }}
-{{ include "ice-global.selectorLabels" . }}
+{{- define "shopping-cart-manager.labels" -}}
+helm.sh/chart: {{ include "shopping-cart-manager.chart" . }}
+{{ include "shopping-cart-manager.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "ice-global.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "ice-global.name" . }}
+{{- define "shopping-cart-manager.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "shopping-cart-manager.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "ice-global.serviceAccountName" -}}
+{{- define "shopping-cart-manager.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "ice-global.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "shopping-cart-manager.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
