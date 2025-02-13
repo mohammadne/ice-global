@@ -1,5 +1,4 @@
-
-# ICE Global
+# Shopping Cart Manager
 
 ![Go Version](https://img.shields.io/badge/Golang-1.23-66ADD8?style=for-the-badge&logo=go)
 ![App Version](https://img.shields.io/github/v/tag/mohammadne/ice-global?sort=semver&style=for-the-badge&logo=github)
@@ -8,9 +7,7 @@
 
 ## Introduction
 
-`ICE Global` is a simple and scalable shopping cart manager that allows users to manage cart items. This project is developed with me as part of an [interview refactor](https://git.ice.global/packages/golang-interview-refactor) for ICE Global.
-
-The application is live at [https://ice-global.mohammadne.ir](https://ice-global.mohammadne.ir) 🚀
+`Shopping Cart Manager` is a simple Go program that allows users to manage cart items.
 
 ![Shopping Cart Manager](assets/application.png)
 
