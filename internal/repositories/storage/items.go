@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/mohammadne/ice-global/pkg/mysql"
+	"github.com/mohammadne/shopping-cart-manager/pkg/mysql"
 )
 
 type Item struct {

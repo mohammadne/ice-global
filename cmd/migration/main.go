@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mohammadne/ice-global/cmd"
-	"github.com/mohammadne/ice-global/internal/config"
-	"github.com/mohammadne/ice-global/pkg/mysql"
+	"github.com/mohammadne/shopping-cart-manager/cmd"
+	"github.com/mohammadne/shopping-cart-manager/internal/config"
+	"github.com/mohammadne/shopping-cart-manager/pkg/mysql"
 )
 
 //go:embed schemas/*.sql

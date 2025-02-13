@@ -10,15 +10,15 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/mohammadne/ice-global/cmd"
-	"github.com/mohammadne/ice-global/internal"
-	"github.com/mohammadne/ice-global/internal/api/http"
-	"github.com/mohammadne/ice-global/internal/config"
-	"github.com/mohammadne/ice-global/internal/repositories/cache"
-	"github.com/mohammadne/ice-global/internal/repositories/storage"
-	"github.com/mohammadne/ice-global/internal/services"
-	"github.com/mohammadne/ice-global/pkg/mysql"
-	"github.com/mohammadne/ice-global/pkg/redis"
+	"github.com/mohammadne/shopping-cart-manager/cmd"
+	"github.com/mohammadne/shopping-cart-manager/internal"
+	"github.com/mohammadne/shopping-cart-manager/internal/api/http"
+	"github.com/mohammadne/shopping-cart-manager/internal/config"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/cache"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/storage"
+	"github.com/mohammadne/shopping-cart-manager/internal/services"
+	"github.com/mohammadne/shopping-cart-manager/pkg/mysql"
+	"github.com/mohammadne/shopping-cart-manager/pkg/redis"
 )
 
 func main() {

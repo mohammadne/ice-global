@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/mohammadne/ice-global/internal/repositories/storage"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/storage"
 )
 
 var cartItemColumns = []string{

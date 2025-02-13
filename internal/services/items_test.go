@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mohammadne/ice-global/internal/entities"
-	"github.com/mohammadne/ice-global/internal/repositories/cache"
-	"github.com/mohammadne/ice-global/internal/repositories/storage"
-	"github.com/mohammadne/ice-global/internal/services"
+	"github.com/mohammadne/shopping-cart-manager/internal/entities"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/cache"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/storage"
+	"github.com/mohammadne/shopping-cart-manager/internal/services"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

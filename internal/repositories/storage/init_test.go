@@ -8,8 +8,8 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
-	"github.com/mohammadne/ice-global/internal/repositories/storage"
-	"github.com/mohammadne/ice-global/pkg/mysql"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/storage"
+	"github.com/mohammadne/shopping-cart-manager/pkg/mysql"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mohammadne/ice-global/internal/entities"
-	"github.com/mohammadne/ice-global/internal/repositories/storage"
+	"github.com/mohammadne/shopping-cart-manager/internal/entities"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/storage"
 	"github.com/stretchr/testify/mock"
 )
 

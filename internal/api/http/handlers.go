@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/mohammadne/ice-global/internal/services"
+	"github.com/mohammadne/shopping-cart-manager/internal/services"
 )
 
 func (*Server) liveness(c *gin.Context) {

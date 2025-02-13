@@ -1,4 +1,4 @@
-module github.com/mohammadne/ice-global
+module github.com/mohammadne/shopping-cart-manager
 
 go 1.23
 

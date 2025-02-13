@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/mohammadne/ice-global/internal/entities"
-	"github.com/mohammadne/ice-global/internal/repositories/cache"
-	"github.com/mohammadne/ice-global/internal/repositories/storage"
+	"github.com/mohammadne/shopping-cart-manager/internal/entities"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/cache"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/storage"
 )
 
 type Items interface {

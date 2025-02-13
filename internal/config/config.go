@@ -9,9 +9,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 
-	"github.com/mohammadne/ice-global/internal"
-	"github.com/mohammadne/ice-global/pkg/mysql"
-	"github.com/mohammadne/ice-global/pkg/redis"
+	"github.com/mohammadne/shopping-cart-manager/internal"
+	"github.com/mohammadne/shopping-cart-manager/pkg/mysql"
+	"github.com/mohammadne/shopping-cart-manager/pkg/redis"
 )
 
 type Config struct {

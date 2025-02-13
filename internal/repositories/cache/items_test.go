@@ -11,9 +11,9 @@ import (
 
 	"github.com/alicebob/miniredis/v2"
 
-	"github.com/mohammadne/ice-global/internal/entities"
-	"github.com/mohammadne/ice-global/internal/repositories/cache"
-	"github.com/mohammadne/ice-global/pkg/redis"
+	"github.com/mohammadne/shopping-cart-manager/internal/entities"
+	"github.com/mohammadne/shopping-cart-manager/internal/repositories/cache"
+	"github.com/mohammadne/shopping-cart-manager/pkg/redis"
 )
 
 var testItems = []entities.Item{

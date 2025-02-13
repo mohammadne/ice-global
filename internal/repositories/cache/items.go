@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mohammadne/ice-global/internal/entities"
-	"github.com/mohammadne/ice-global/pkg/redis"
+	"github.com/mohammadne/shopping-cart-manager/internal/entities"
+	"github.com/mohammadne/shopping-cart-manager/pkg/redis"
 )
 
 type Items interface {

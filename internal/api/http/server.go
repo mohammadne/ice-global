@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mohammadne/ice-global/internal/services"
+	"github.com/mohammadne/shopping-cart-manager/internal/services"
 )
 
 type Server struct {

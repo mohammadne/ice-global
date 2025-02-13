@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mohammadne/ice-global/pkg/mysql"
+	"github.com/mohammadne/shopping-cart-manager/pkg/mysql"
 )
 
 type CartItem struct {
