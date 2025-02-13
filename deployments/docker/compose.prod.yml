@@ -32,8 +32,8 @@ services:
     image: mysql:9.2.0
     environment:
       - MYSQL_ROOT_PASSWORD=9xz3jrd8wf
-      - MYSQL_DATABASE=ice_db
-      - MYSQL_USER=ice_user
+      - MYSQL_DATABASE=shopping_cart_manager_db
+      - MYSQL_USER=shopping_cart_manager_user
       - MYSQL_PASSWORD=9xz3jrd8wf
     volumes:
       - mysql_data:/var/lib/mysql
@@ -46,21 +46,21 @@ services:
     command:
       - --environment=prod
     environment:
-      - ICE_GLOBAL_MYSQL_HOST=mysql
-      - ICE_GLOBAL_MYSQL_PORT=3306
-      - ICE_GLOBAL_MYSQL_USER=ice_user
-      - ICE_GLOBAL_MYSQL_PASSWORD=9xz3jrd8wf
-      - ICE_GLOBAL_MYSQL_DATABASE=ice_db
-      - ICE_GLOBAL_REDIS_ADDRESS=redis:6379
-      - ICE_GLOBAL_REDIS_USERNAME=
-      - ICE_GLOBAL_REDIS_PASSWORD=
-      - ICE_GLOBAL_REDIS_DB=1
+      - SHOPPING_CART_MANAGER_MYSQL_HOST=mysql
+      - SHOPPING_CART_MANAGER_MYSQL_PORT=3306
+      - SHOPPING_CART_MANAGER_MYSQL_USER=shopping_cart_manager_user
+      - SHOPPING_CART_MANAGER_MYSQL_PASSWORD=9xz3jrd8wf
+      - SHOPPING_CART_MANAGER_MYSQL_DATABASE=shopping_cart_manager_db
+      - SHOPPING_CART_MANAGER_REDIS_ADDRESS=redis:6379
+      - SHOPPING_CART_MANAGER_REDIS_USERNAME=
+      - SHOPPING_CART_MANAGER_REDIS_PASSWORD=
+      - SHOPPING_CART_MANAGER_REDIS_DB=1
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ice_global.rule=Host(`shopping-cart-manager.mohammadne.ir`)"
-      - "traefik.http.routers.ice_global.entrypoints=websecure"
-      - "traefik.http.routers.ice_global.tls.certresolver=myresolver"
-      - "traefik.http.services.ice_global.loadbalancer.server.port=8088"
+      - "traefik.http.routers.shopping_cart_manager.rule=Host(`shopping-cart-manager.mohammadne.ir`)"
+      - "traefik.http.routers.shopping_cart_manager.entrypoints=websecure"
+      - "traefik.http.routers.shopping_cart_manager.tls.certresolver=myresolver"
+      - "traefik.http.services.shopping_cart_manager.loadbalancer.server.port=8088"
     depends_on:
       - redis
       - mysql
